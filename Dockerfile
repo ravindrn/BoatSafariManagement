@@ -17,10 +17,11 @@ FROM eclipse-temurin:17-jdk-jammy
 WORKDIR /app
 
 # Copy the built jar from the previous stage
-COPY --from=build /app/target/BoatSafariManagement-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/backend-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the port Spring Boot will run on
 EXPOSE 8080
 
 # Run the jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
+
