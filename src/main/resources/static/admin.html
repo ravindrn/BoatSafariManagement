@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boat Safari - Admin Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #0a2463;
+            --secondary-blue: #1e3a8a;
+            --accent-blue: #3b82f6;
+            --light-blue: #dbeafe;
+            --white: #ffffff;
+            --black: #1f2937;
+            --gray: #6b7280;
+            --light-gray: #f3f4f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--black);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+        }
+
+        .navbar {
+            background-color: var(--white);
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--primary-blue) !important;
+        }
+
+        .navbar-brand i {
+            color: var(--accent-blue);
+            margin-right: 8px;
+        }
+
+        .nav-link {
+            color: var(--black) !important;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-blue) !important;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            border: none;
+            padding: 10px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .user-welcome {
+            color: var(--primary-blue);
+            font-weight: 600;
+            margin-right: 15px;
+        }
+
+        .user-welcome i {
+            color: var(--accent-blue);
+            margin-right: 5px;
+        }
+
+        .admin-hero {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: var(--white);
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .admin-hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .admin-hero p {
+            font-size: 1.2rem;
+            color: var(--light-blue);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .dashboard-section {
+            padding: 60px 0;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            text-align: center;
+            color: var(--primary-blue);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent-blue);
+            border-radius: 2px;
+        }
+
+        .admin-card {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            height: 100%;
+        }
+
+        .admin-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .admin-card-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--secondary-blue));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            color: var(--white);
+        }
+
+        .admin-card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-blue);
+        }
+
+        .admin-card-description {
+            color: var(--gray);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .quick-actions {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .action-item:last-child {
+            border-bottom: none;
+        }
+
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--light-blue);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--accent-blue);
+            font-size: 1.2rem;
+        }
+
+        .action-content {
+            flex: 1;
+        }
+
+        .action-title {
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 5px;
+        }
+
+        .action-description {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Footer Improvements */
+        footer {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            padding: 50px 0 20px;
+            margin-top: auto;
+            color: var(--white);
+            position: relative;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--light-blue));
+        }
+
+        .footer-heading {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--light-blue);
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-heading::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background-color: var(--accent-blue);
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-links a {
+            color: var(--light-gray);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-blue);
+            padding-left: 5px;
+            transform: translateX(5px);
+        }
+
+        .copyright {
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 25px;
+            margin-top: 30px;
+            text-align: center;
+            color: var(--light-gray);
+            font-size: 0.9rem;
+        }
+
+        /* Social media icons hover effects */
+        footer .fa-facebook-f:hover { color: #1877f2 !important; }
+        footer .fa-twitter:hover { color: #1da1f2 !important; }
+        footer .fa-instagram:hover { color: #e4405f !important; }
+        footer .fa-youtube:hover { color: #ff0000 !important; }
+
+        /* Scroll to top button */
+        #scrollToTop {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            background-color: var(--accent-blue);
+            border: none;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        #scrollToTop:hover {
+            background-color: var(--secondary-blue);
+            transform: translateY(-3px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .admin-hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .admin-hero p {
+                font-size: 1rem;
+            }
+
+            .section-title {
+                font-size: 1.6rem;
+            }
+
+            footer {
+                padding: 40px 0 20px;
+                text-align: center;
+            }
+
+            .footer-heading::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .footer-links li {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-light sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="#"><i class="fas fa-ship"></i> Boat Safari</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="admin.html">Admin Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="adminHome.html">Home Management</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center">
+                    <span class="user-welcome">
+                        <i class="fas fa-user-shield me-2"></i>
+                        <span id="userName">Admin</span>
+                    </span>
+                <a href="user-management.html" class="btn btn-outline-primary ms-3" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Admin Hero Section -->
+    <section class="admin-hero">
+        <div class="container">
+            <h1>Admin Dashboard</h1>
+            <p>Welcome to the Boat Safari Administration Panel. Manage all aspects of your boat safari operations from this centralized dashboard.</p>
+        </div>
+    </section>
+
+    <!-- Main Dashboard Section -->
+    <section class="dashboard-section">
+        <div class="container">
+            <h2 class="section-title">Management Modules</h2>
+
+            <div class="row g-4 justify-content-center">
+                <!-- User Management -->
+                <div class="col-md-6 col-lg-5">
+                    <div class="admin-card">
+                        <div class="admin-card-icon">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <h3 class="admin-card-title">User Management</h3>
+                        <p class="admin-card-description">
+                            Create, view, and manage all user accounts. Assign roles, reset passwords, and monitor user activity across the system.
+                        </p>
+                        <a href="adminUserManagement.html" class="btn btn-primary">
+                            <i class="fas fa-cog me-2"></i>Manage Users
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Content Management -->
+                <div class="col-md-6 col-lg-5">
+                    <div class="admin-card">
+                        <div class="admin-card-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <h3 class="admin-card-title">Home Page Management</h3>
+                        <p class="admin-card-description">
+                            Manage homepage content, hero sections, featured trips, and promotional banners. Keep your website content fresh and engaging.
+                        </p>
+                        <a href="adminHome.html" class="btn btn-primary">
+                            <i class="fas fa-edit me-2"></i>Manage Homepage
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Staff Schedule Management -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="admin-card">
+                        <div class="admin-card-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <h3 class="admin-card-title">Staff Schedule</h3>
+                        <p class="admin-card-description">
+                            Access staff scheduling portal to manage bookings, boat assignments, and monitor daily operations.
+                        </p>
+                        <a href="schedule.html" class="btn btn-primary">
+                            <i class="fas fa-calendar me-2"></i>Manage Schedule
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Reports & Analytics -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="admin-card">
+                        <div class="admin-card-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3 class="admin-card-title">Reports & Analytics</h3>
+                        <p class="admin-card-description">
+                            Access comprehensive reports, revenue analytics, booking statistics, and business performance insights.
+                        </p>
+                        <a href="reports.html" class="btn btn-primary">
+                            <i class="fas fa-chart-line me-2"></i>View Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions Section -->
+            <div class="quick-actions">
+                <h3 class="section-title">Quick Actions</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="action-item">
+                            <div class="action-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="action-content">
+                                <div class="action-title">View Analytics</div>
+                                <div class="action-description">Check system performance and user statistics</div>
+                            </div>
+                        </div>
+                        <div class="action-item">
+                            <div class="action-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="action-content">
+                                <div class="action-title">Generate Reports</div>
+                                <div class="action-description">Create detailed reports on bookings and revenue</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="action-item">
+                            <div class="action-icon">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            <div class="action-content">
+                                <div class="action-title">System Settings</div>
+                                <div class="action-description">Configure system preferences and options</div>
+                            </div>
+                        </div>
+                        <div class="action-item">
+                            <div class="action-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="action-content">
+                                <div class="action-title">Backup Data</div>
+                                <div class="action-description">Create system backups for data security</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <h4 class="footer-heading">Boat Safari Admin</h4>
+                <p style="color: var(--light-gray); line-height: 1.6;">
+                    Complete administration system for managing Boat Safari operations, users, and content.
+                </p>
+                <div class="mt-3">
+                    <a href="#" class="text-white me-3" style="text-decoration: none;">
+                        <i class="fab fa-facebook-f fa-lg"></i>
+                    </a>
+                    <a href="#" class="text-white me-3" style="text-decoration: none;">
+                        <i class="fab fa-twitter fa-lg"></i>
+                    </a>
+                    <a href="#" class="text-white me-3" style="text-decoration: none;">
+                        <i class="fab fa-instagram fa-lg"></i>
+                    </a>
+                    <a href="#" class="text-white" style="text-decoration: none;">
+                        <i class="fab fa-youtube fa-lg"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-2 mb-4">
+                <h4 class="footer-heading">Admin Links</h4>
+                <ul class="footer-links">
+                    <li><a href="admin.html">Dashboard</a></li>
+                    <li><a href="adminUserManagement.html">User Management</a></li>
+                    <li><a href="adminHome.html">Home Management</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-4">
+                <h4 class="footer-heading">System</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Analytics</a></li>
+                    <li><a href="reports.html">Reports</a></li>
+                    <li><a href="schedule.html">Schedule</a></li>
+                    <li><a href="#">Settings</a></li>
+                    <li><a href="#">Backup</a></li>
+                    <li><a href="#">Logs</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-4">
+                <h4 class="footer-heading">Support</h4>
+                <ul class="footer-links">
+                    <li><i class="fas fa-envelope me-2"></i>admin@boatsafari.com</li>
+                    <li><i class="fas fa-phone me-2"></i>+1 234 567 8900</li>
+                    <li><i class="fas fa-clock me-2"></i>24/7 Admin Support</li>
+                    <li><i class="fas fa-book me-2"></i>Admin Documentation</li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; <span id="currentYear">2023</span> Boat Safari Trip Management System - Admin Panel. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Scroll to Top Button -->
+<button id="scrollToTop" class="btn btn-primary">
+    <i class="fas fa-chevron-up"></i>
+</button>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Auth System -->
+<script src="auth.js"></script>
+<script>
+    // API Base URL
+    const API_BASE = 'http://localhost:8080/api';
+
+    // Utility function to get user display name (prioritizes first name)
+    function getUserDisplayName() {
+        const userFirstName = localStorage.getItem('currentUserFirstName');
+        const userName = localStorage.getItem('currentUserName');
+        return userFirstName || userName || 'Admin';
+    }
+
+    // Utility function to check if user is logged in
+    function isLoggedIn() {
+        return localStorage.getItem('currentUserToken') !== null;
+    }
+
+    // Utility function to check if user is admin
+    function isAdmin() {
+        const userRole = localStorage.getItem('currentUserRole');
+        return userRole === 'SYSTEM_ADMINISTRATOR';
+    }
+
+    // Utility function to logout
+    function logout() {
+        // Clear all user data from localStorage
+        localStorage.removeItem('currentUserToken');
+        localStorage.removeItem('currentUserEmail');
+        localStorage.removeItem('currentUserName');
+        localStorage.removeItem('currentUserRole');
+        localStorage.removeItem('currentUserFirstName');
+        window.location.href = 'user-management.html';
+    }
+
+    function isSystemAdministrator() {
+        const userRole = localStorage.getItem('currentUserRole');
+        console.log('🔐 Checking SYSTEM_ADMINISTRATOR access for role:', userRole);
+        return userRole === 'SYSTEM_ADMINISTRATOR';
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if user is logged in and is admin
+        if (!isLoggedIn()) {
+            window.location.href = 'user-management.html';
+            return;
+        }
+
+        if (!isSystemAdministrator()) {
+            alert('Access denied. System Administrator privileges required.');
+
+            // Redirect USER_MANAGER to User Management page
+            const userRole = localStorage.getItem('currentUserRole');
+            if (userRole === 'USER_MANAGER') {
+                window.location.href = 'adminUserManagement.html';
+            } else {
+                window.location.href = 'booking.html';
+            }
+            return;
+        }
+
+        // Set user display name
+        const displayName = getUserDisplayName();
+        document.getElementById('userName').textContent = displayName;
+
+        // Setup logout button
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            logout();
+        });
+
+        // Add click handlers for admin cards
+        document.querySelectorAll('.admin-card .btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const cardTitle = this.closest('.admin-card').querySelector('.admin-card-title').textContent;
+                console.log(`Navigating to: ${cardTitle}`);
+                // Navigation is handled by href attributes
+            });
+        });
+
+        // Update the copyright year automatically
+        const copyrightElement = document.querySelector('.copyright p');
+        if (copyrightElement) {
+            const currentYear = new Date().getFullYear();
+            document.getElementById('currentYear').textContent = currentYear;
+        }
+
+        // Scroll to top functionality
+        const scrollToTopBtn = document.getElementById('scrollToTop');
+
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.style.display = 'block';
+            } else {
+                scrollToTopBtn.style.display = 'none';
+            }
+        });
+
+        scrollToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    });
+
+    // Utility function to check if user is active (for frontend validation)
+    function isUserActive() {
+        // This is a frontend check - main validation happens on backend
+        // We assume user is active if they have a valid token
+        return isLoggedIn(); // Backend will reject if inactive
+    }
+
+    // Enhanced initialization for all protected pages
+    function initializeProtectedPage() {
+        // Check if user is logged in
+        if (!isLoggedIn()) {
+            window.location.href = 'user-management.html';
+            return;
+        }
+
+        // Verify token is still valid by making a simple API call
+        verifyUserStatus().then(isValid => {
+            if (!isValid) {
+                // Token is invalid or user is inactive
+                logout();
+                return;
+            }
+
+            // User is valid, proceed with page initialization
+            const displayName = getUserDisplayName();
+            const userNameElement = document.getElementById('userName');
+            if (userNameElement) {
+                userNameElement.textContent = displayName;
+            }
+
+            // Setup logout button
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+
+            // Call page-specific initialization
+            if (typeof initializePage === 'function') {
+                initializePage();
+            }
+        }).catch(error => {
+            console.error('Error verifying user status:', error);
+            logout();
+        });
+    }
+
+    // Function to verify user status with backend
+    async function verifyUserStatus() {
+        try {
+            const token = localStorage.getItem('currentUserToken');
+            if (!token) return false;
+
+            // Make a simple API call to verify user status
+            const response = await fetch(`${API_BASE}/users/email/${localStorage.getItem('currentUserEmail')}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            return response.ok;
+        } catch (error) {
+            console.error('Error verifying user status:', error);
+            return false;
+        }
+    }
+</script>
+</body>
+</html>

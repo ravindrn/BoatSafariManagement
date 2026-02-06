@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boat Safari - Booking Management</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #0a2463;
+            --secondary-blue: #1e3a8a;
+            --accent-blue: #3b82f6;
+            --light-blue: #dbeafe;
+            --white: #ffffff;
+            --black: #1f2937;
+            --gray: #6b7280;
+            --light-gray: #f3f4f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--black);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: var(--white);
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--primary-blue) !important;
+        }
+
+        .navbar-brand i {
+            color: var(--accent-blue);
+            margin-right: 8px;
+        }
+
+        .nav-link {
+            color: var(--black) !important;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-blue) !important;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            border: none;
+            padding: 10px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .user-welcome {
+            color: var(--primary-blue);
+            font-weight: 600;
+            margin-right: 15px;
+        }
+
+        .user-welcome i {
+            color: var(--accent-blue);
+            margin-right: 5px;
+        }
+
+        /* ... rest of your existing styles remain exactly the same ... */
+
+        .hero-section {
+            padding: 120px 0 80px;
+            background-image: linear-gradient(rgba(10, 36, 99, 0.7), rgba(10, 36, 99, 0.7)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            color: var(--white);
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 3.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            color: var(--light-blue);
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-box {
+            background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .card {
+            background-color: var(--white);
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            color: var(--black);
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: var(--primary-blue);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 20px;
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .trip-card {
+            height: 100%;
+        }
+
+        .trip-image {
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .trip-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-blue);
+        }
+
+        .trip-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            color: var(--gray);
+        }
+
+        .trip-info i {
+            margin-right: 10px;
+            width: 20px;
+            color: var(--accent-blue);
+        }
+
+        .availability-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .availability-high {
+            background-color: rgba(34, 197, 94, 0.2);
+            color: #16a34a;
+        }
+
+        .availability-medium {
+            background-color: rgba(251, 191, 36, 0.2);
+            color: #d97706;
+        }
+
+        .availability-low {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #dc2626;
+        }
+
+        .booking-form {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-label {
+            color: var(--black);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-control, .form-select {
+            background-color: var(--white);
+            border: 1px solid #e5e7eb;
+            color: var(--black);
+            padding: 12px 15px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--white);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+            color: var(--black);
+        }
+
+        .form-control::placeholder {
+            color: var(--gray);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+            color: var(--primary-blue);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background-color: var(--accent-blue);
+            border-radius: 3px;
+        }
+
+        .filter-section {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        footer {
+            background-color: var(--black);
+            padding: 40px 0 20px;
+            margin-top: 60px;
+            color: var(--white);
+        }
+
+        .footer-heading {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--accent-blue);
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: var(--light-gray);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-blue);
+            padding-left: 5px;
+        }
+
+        .copyright {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            margin-top: 30px;
+            text-align: center;
+            color: var(--light-gray);
+            font-size: 0.9rem;
+        }
+
+        .booking-summary {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .summary-total {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--accent-blue);
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--accent-blue);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--light-blue);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .card-body {
+                padding: 20px;
+            }
+
+            .hero-stats {
+                gap: 20px;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+
+        /* Booking Confirmation Modal */
+        .booking-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+
+        .booking-modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--white);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        .booking-success-icon {
+            font-size: 4rem;
+            color: #10b981;
+            margin-bottom: 20px;
+            animation: bounce 0.6s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .booking-modal h3 {
+            color: var(--primary-blue);
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        .booking-modal p {
+            color: var(--gray);
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .booking-reference {
+            background: var(--light-blue);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .booking-reference-code {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            letter-spacing: 2px;
+        }
+
+        .booking-modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            justify-content: center;
+        }
+
+        .btn-success {
+            background-color: #10b981;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-secondary {
+            background-color: transparent;
+            border: 2px solid var(--gray);
+            color: var(--gray);
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-secondary:hover {
+            border-color: var(--black);
+            color: var(--black);
+            transform: translateY(-2px);
+        }
+
+        /* Style for range input */
+        .form-range {
+            width: 100%;
+            height: 8px;
+        }
+
+        .form-range::-webkit-slider-thumb {
+            background: var(--accent-blue);
+            border: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .form-range::-moz-range-thumb {
+            background: var(--accent-blue);
+            border: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .form-range::-webkit-slider-track {
+            background: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+        }
+
+        .form-range::-moz-range-track {
+            background: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-light sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="#"><i class="fas fa-ship"></i> Boat Safari</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="booking.html">Book Trip</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="mybookings.html">My Bookings</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center">
+                    <span class="user-welcome">
+                        <i class="fas fa-user-circle me-2"></i>
+                        <span id="userName">Customer</span>
+                    </span>
+                <a href="user-management.html" class="btn btn-outline-primary ms-3" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1 class="hero-title">Book Your Boat Safari Adventure</h1>
+        <p class="hero-subtitle">Explore breathtaking rivers and wildlife with our premium boat safari trips. Select from available trips, book your seats, and get ready for an unforgettable experience.</p>
+
+    </div>
+</section>
+
+<!-- Main Content -->
+<div class="container">
+    <!-- Available Trips Section -->
+    <h2 class="section-title mt-5">Available Trips</h2>
+    <div class="row" id="tripsContainer">
+        <!-- Trip cards will be dynamically populated here -->
+    </div>
+
+    <!-- Booking Form Section -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="booking-form">
+                <h2 class="section-title">Booking Details</h2>
+                <form id="bookingForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="firstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="firstName" placeholder="Enter your first name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="lastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" placeholder="Enter your last name" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" placeholder="Enter your phone number" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" rows="3" placeholder="Enter your address"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="tripSelect" class="form-label">Select Trip</label>
+                            <select class="form-select" id="tripSelect" required>
+                                <option value="" selected disabled>Choose a trip</option>
+                                <!-- Options will be populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="passengers" class="form-label">Number of Passengers</label>
+                            <input type="range" class="form-range" id="passengers" min="1" max="25" value="1">
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <small>1</small>
+                                <span id="passengersValue" class="fw-bold">1 Passenger</span>
+                                <small>25</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="tripDate" class="form-label">Trip Date</label>
+                            <input type="date" class="form-control" id="tripDate" required min="">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="specialRequests" class="form-label">Special Requests</label>
+                        <textarea class="form-control" id="specialRequests" rows="3" placeholder="Any special requests or requirements"></textarea>
+                    </div>
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="termsCheck" required>
+                        <label class="form-check-label" for="termsCheck">
+                            I agree to the <a href="#" class="text-decoration-none">Terms and Conditions</a> and <a href="#" class="text-decoration-none">Privacy Policy</a>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100"><i class="fas fa-ticket-alt me-2"></i>Confirm Booking</button>
+                </form>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="booking-summary">
+                <h3 class="mb-4">Booking Summary</h3>
+                <div class="summary-item">
+                    <span>Trip:</span>
+                    <span id="summaryTrip">Not selected</span>
+                </div>
+                <div class="summary-item">
+                    <span>Date & Time:</span>
+                    <span id="summaryDateTime">-</span>
+                </div>
+                <div class="summary-item">
+                    <span>Passengers:</span>
+                    <span id="summaryPassengers">-</span>
+                </div>
+                <div class="summary-item">
+                    <span>Price per person:</span>
+                    <span id="summaryPrice">-</span>
+                </div>
+                <div class="summary-item summary-total">
+                    <span>Total:</span>
+                    <span id="summaryTotal">Rs.0.00</span>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    <i class="fas fa-info-circle me-2"></i>Booking Information
+                </div>
+                <div class="card-body">
+                    <p><i class="fas fa-clock me-2"></i>Check-in: 30 minutes before departure</p>
+                    <p><i class="fas fa-undo me-2"></i>Free cancellation up to 24 hours before</p>
+                    <p><i class="fas fa-utensils me-2"></i>Refreshments included</p>
+                    <p><i class="fas fa-camera me-2"></i>Photo opportunities</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Booking Confirmation Modal -->
+<div class="booking-modal" id="bookingModal">
+    <div class="booking-modal-content">
+        <div class="booking-success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h3>Booking Confirmed!</h3>
+        <p>Your boat safari adventure has been successfully booked.</p>
+        <p>We've sent a confirmation email with all the details.</p>
+
+        <div class="booking-reference">
+            <p style="margin-bottom: 5px; font-size: 0.9rem; color: var(--gray);">Booking Reference</p>
+            <div class="booking-reference-code" id="bookingReferenceCode">#BS123456</div>
+        </div>
+
+        <div class="booking-modal-buttons">
+            <button class="btn-success" id="modalNewBooking">
+                <i class="fas fa-plus me-2"></i>New Booking
+            </button>
+            <button class="btn-outline-secondary" id="modalViewBookings">
+                <i class="fas fa-list me-2"></i>View My Bookings
+            </button>
+        </div>
+    </div>
+</div>
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <h4 class="footer-heading">Boat Safari</h4>
+                <p>Experience the thrill of river exploration with our premium boat safari trips. Discover wildlife, scenic views, and unforgettable adventures.</p>
+                <div class="mt-3">
+                    <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-white"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="col-md-2 mb-4">
+                <h4 class="footer-heading">Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Destinations</a></li>
+                    <li><a href="#">Gallery</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-4">
+                <h4 class="footer-heading">Trip Types</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Wildlife Safari</a></li>
+                    <li><a href="#">Sunset Cruise</a></li>
+                    <li><a href="#">Bird Watching</a></li>
+                    <li><a href="#">Fishing Trip</a></li>
+                    <li><a href="#">Private Charter</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-4">
+                <h4 class="footer-heading">Contact Info</h4>
+                <ul class="footer-links">
+                    <li><i class="fas fa-map-marker-alt me-2"></i>123 Riverfront, City</li>
+                    <li><i class="fas fa-phone me-2"></i>+1 234 567 8900</li>
+                    <li><i class="fas fa-envelope me-2"></i>info@boatsafari.com</li>
+                    <li><i class="fas fa-clock me-2"></i>Mon - Sun: 8:00 AM - 8:00 PM</li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2023 Boat Safari Trip Management System. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // API Base URL - adjust according to your Spring Boot server
+    const API_BASE = 'http://localhost:8080/api';
+
+    // Function to load trips from backend
+    async function loadTrips() {
+        try {
+            console.log('Loading trips from backend...');
+            const response = await fetch(`${API_BASE}/trips/active`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const trips = await response.json();
+            console.log('Loaded trips:', trips);
+            displayTrips(trips);
+            populateTripSelect(trips);
+        } catch (error) {
+            console.error('Error loading trips:', error);
+            // Fallback to sample data if API fails
+            const sampleTrips = getSampleTrips();
+            displayTrips(sampleTrips);
+            populateTripSelect(sampleTrips);
+        }
+    }
+
+    // Function to hide booking confirmation modal
+    function hideBookingConfirmation() {
+        const modal = document.getElementById('bookingModal');
+        modal.style.display = 'none';
+    }
+
+    // Function to show booking confirmation modal
+    function showBookingConfirmation(booking) {
+        const modal = document.getElementById('bookingModal');
+        const referenceCode = document.getElementById('bookingReferenceCode');
+
+        // Set booking reference
+        referenceCode.textContent = `#${booking.id}`;
+
+        // Show modal
+        modal.style.display = 'block';
+
+        // Add event listeners to modal buttons
+        document.getElementById('modalNewBooking').onclick = function() {
+            hideBookingConfirmation();
+            // Form is already reset in the main flow
+        };
+
+        document.getElementById('modalViewBookings').onclick = function() {
+            window.location.href = 'mybookings.html';
+        };
+
+        // Close modal when clicking outside
+        modal.onclick = function(e) {
+            if (e.target === modal) {
+                hideBookingConfirmation();
+            }
+        };
+
+        // Also close with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                hideBookingConfirmation();
+            }
+        });
+    }
+
+    // Function to display trips
+    function displayTrips(trips) {
+        const tripsContainer = document.getElementById('tripsContainer');
+        tripsContainer.innerHTML = '';
+
+        if (!trips || trips.length === 0) {
+            tripsContainer.innerHTML = '<div class="col-12"><div class="alert alert-info">No trips available at the moment.</div></div>';
+            return;
+        }
+
+        trips.forEach(trip => {
+            // Determine availability badge
+            let availabilityClass, availabilityText;
+            if (trip.capacity > 10) {
+                availabilityClass = 'availability-high';
+                availabilityText = 'High Availability';
+            } else if (trip.capacity > 5) {
+                availabilityClass = 'availability-medium';
+                availabilityText = 'Medium Availability';
+            } else {
+                availabilityClass = 'availability-low';
+                availabilityText = 'Low Availability';
+            }
+
+            // Create trip card
+            const tripCard = document.createElement('div');
+            tripCard.className = 'col-md-6 col-lg-4';
+            tripCard.innerHTML = `
+            <div class="card trip-card" data-trip-id="${trip.id}">
+                <div class="card-body">
+                    ${trip.imageUrl ? `<div class="trip-image" style="background-image: url('${trip.imageUrl}')"></div>` : '<div class="trip-image" style="background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #666;">No Image</div>'}
+                    <h3 class="trip-title">${trip.name}</h3>
+                    <div class="trip-info">
+                        <i class="fas fa-water"></i>
+                        <span>${trip.destination}</span>
+                    </div>
+                    <div class="trip-info">
+                        <i class="fas fa-clock"></i>
+                        <span>${trip.duration} Hours</span>
+                    </div>
+                    <div class="trip-info">
+                        <i class="fas fa-tag"></i>
+                        <span>Rs.${trip.pricePerPerson} per person</span>
+                    </div>
+                    <p class="mt-3">${trip.description || ''}</p>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="availability-badge ${availabilityClass}">${availabilityText}</span>
+                        <button class="btn btn-primary btn-sm select-trip" data-trip-id="${trip.id}">Select</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+            tripsContainer.appendChild(tripCard);
+        });
+
+        // Add event listeners to select buttons
+        document.querySelectorAll('.select-trip').forEach(button => {
+            button.addEventListener('click', function() {
+                const tripId = this.getAttribute('data-trip-id');
+                document.getElementById('tripSelect').value = tripId;
+                updateBookingSummary();
+            });
+        });
+    }
+
+    // Function to populate trip select dropdown
+    function populateTripSelect(trips) {
+        const tripSelect = document.getElementById('tripSelect');
+        tripSelect.innerHTML = '<option value="" selected disabled>Choose a trip</option>';
+
+        trips.forEach(trip => {
+            const option = document.createElement('option');
+            option.value = trip.id;
+            option.textContent = `${trip.name} - Rs.${trip.pricePerPerson}`;
+            option.setAttribute('data-price', trip.pricePerPerson);
+            tripSelect.appendChild(option);
+        });
+    }
+
+    // Function to update booking summary
+    function updateBookingSummary() {
+        const tripSelect = document.getElementById('tripSelect');
+        const passengersInput = document.getElementById('passengers');
+        const tripDateInput = document.getElementById('tripDate');
+        const summaryTrip = document.getElementById('summaryTrip');
+        const summaryDateTime = document.getElementById('summaryDateTime');
+        const summaryPassengers = document.getElementById('summaryPassengers');
+        const summaryPrice = document.getElementById('summaryPrice');
+        const summaryTotal = document.getElementById('summaryTotal');
+
+        if (tripSelect.value) {
+            const selectedOption = tripSelect.options[tripSelect.selectedIndex];
+            const price = parseFloat(selectedOption.getAttribute('data-price'));
+            const passengerCount = parseInt(passengersInput.value);
+            const tripDate = tripDateInput.value;
+            const totalPrice = price * passengerCount;
+
+            summaryTrip.textContent = selectedOption.text;
+            summaryDateTime.textContent = tripDate ? new Date(tripDate).toLocaleDateString() : 'Not selected';
+            summaryPassengers.textContent = passengerCount;
+            summaryPrice.textContent = `Rs.${price.toFixed(2)}`;
+            summaryTotal.textContent = `Rs.${totalPrice.toFixed(2)}`;
+        } else {
+            summaryTrip.textContent = "Not selected";
+            summaryDateTime.textContent = "-";
+            summaryPassengers.textContent = "-";
+            summaryPrice.textContent = "-";
+            summaryTotal.textContent = "Rs.0.00";
+        }
+    }
+
+    // Function to handle booking submission
+    async function handleBookingSubmit() {
+        try {
+            const tripSelect = document.getElementById('tripSelect');
+            const passengersInput = document.getElementById('passengers');
+            const tripDateInput = document.getElementById('tripDate');
+
+            // Validate trip selection
+            if (!tripSelect.value) {
+                showError('Please select a trip');
+                return false;
+            }
+
+            // Validate trip date
+            if (!tripDateInput.value) {
+                showError('Please select a trip date');
+                return false;
+            }
+
+            const bookingRequest = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phoneNumber: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                tripId: parseInt(tripSelect.value),
+                numberOfPeople: parseInt(passengersInput.value),
+                specialRequests: document.getElementById('specialRequests').value,
+                tripDate: tripDateInput.value + 'T10:00:00' // Add a default time (10:00 AM)
+            };
+
+            console.log('Submitting booking:', bookingRequest);
+
+            const response = await fetch(`${API_BASE}/bookings`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bookingRequest)
+            });
+
+            if (response.ok) {
+                const booking = await response.json();
+                console.log('Booking created successfully:', booking);
+                showBookingConfirmation(booking);
+                return true;
+            } else {
+                const error = await response.text();
+                console.error('Booking failed:', error);
+                showError(`Booking failed: ${error}`);
+                return false;
+            }
+        } catch (error) {
+            console.error('Error submitting booking:', error);
+            showError('Booking failed. Please try again.');
+            return false;
+        }
+    }
+
+    // Function to show error messages (styled)
+    function showError(message) {
+        // Create or get error modal
+        let errorModal = document.getElementById('errorModal');
+        if (!errorModal) {
+            errorModal = document.createElement('div');
+            errorModal.id = 'errorModal';
+            errorModal.className = 'booking-modal';
+            errorModal.innerHTML = `
+            <div class="booking-modal-content">
+                <div style="font-size: 4rem; color: #ef4444; margin-bottom: 20px;">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <h3 style="color: #dc2626;">Oops!</h3>
+                <p id="errorMessage">${message}</p>
+                <div class="booking-modal-buttons">
+                    <button class="btn-success" onclick="hideError()" style="background-color: #dc2626;">
+                        <i class="fas fa-times me-2"></i>Close
+                    </button>
+                </div>
+            </div>
+        `;
+            document.body.appendChild(errorModal);
+        } else {
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        errorModal.style.display = 'block';
+
+        // Close modal when clicking outside
+        errorModal.onclick = function(e) {
+            if (e.target === errorModal) {
+                hideError();
+            }
+        };
+
+        // Also close with Escape key
+        document.addEventListener('keydown', function closeOnEscape(e) {
+            if (e.key === 'Escape') {
+                hideError();
+                document.removeEventListener('keydown', closeOnEscape);
+            }
+        });
+    }
+
+    // Function to hide error modal
+    function hideError() {
+        const errorModal = document.getElementById('errorModal');
+        if (errorModal) {
+            errorModal.style.display = 'none';
+        }
+    }
+
+    // Form validation
+    function validateForm() {
+        const tripSelect = document.getElementById('tripSelect');
+        const tripDateInput = document.getElementById('tripDate');
+        const passengersInput = document.getElementById('passengers');
+
+        if (!tripSelect.value) {
+            showError('Please select a trip');
+            return false;
+        }
+
+        if (!tripDateInput.value) {
+            showError('Please select a trip date');
+            return false;
+        }
+
+        const passengerCount = parseInt(passengersInput.value);
+        if (passengerCount < 1 || passengerCount > 25) {
+            showError('Please select between 1 and 25 passengers');
+            return false;
+        }
+
+        const firstName = document.getElementById('firstName').value;
+        const lastName = document.getElementById('lastName').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+
+        if (!firstName || !lastName || !email || !phone) {
+            showError('Please fill in all required fields');
+            return false;
+        }
+
+        const termsCheck = document.getElementById('termsCheck');
+        if (!termsCheck.checked) {
+            showError('Please agree to the Terms and Conditions');
+            return false;
+        }
+
+        return true;
+    }
+
+    // Sample data fallback
+    function getSampleTrips() {
+        return [
+            {
+                id: 1,
+                name: "Amazon River Wildlife Safari",
+                type: "Wildlife",
+                destination: "Amazon River",
+                duration: 180,
+                capacity: 12,
+                pricePerPerson: 75.00,
+                imageUrl: "https://images.unsplash.com/photo-1594736797933-d0e013c8c7e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+                description: "Explore the diverse wildlife of the Amazon River with our expert guides.",
+                active: true
+            },
+            {
+                id: 2,
+                name: "Nile River Sunset Cruise",
+                type: "Sunset",
+                destination: "Nile River",
+                duration: 150,
+                capacity: 8,
+                pricePerPerson: 65.00,
+                imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80",
+                description: "Enjoy a breathtaking sunset while cruising along the historic Nile River.",
+                active: true
+            }
+        ];
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Page loaded, initializing...');
+
+        // Load trips from backend
+        loadTrips();
+
+        // Set user info from localStorage
+        const userFirstName = localStorage.getItem('currentUserFirstName');
+        const userName = localStorage.getItem('currentUserName');
+        const displayName = userFirstName || userName || 'Customer';
+        document.getElementById('userName').textContent = displayName;
+
+        // Pre-fill form with user data
+        const userEmail = localStorage.getItem('currentUserEmail');
+        if (userEmail) {
+            document.getElementById('email').value = userEmail;
+        }
+        if (userFirstName) {
+            document.getElementById('firstName').value = userFirstName;
+        }
+
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('tripDate').min = today;
+
+        // Range input event listener for passengers
+        document.getElementById('passengers').addEventListener('input', function() {
+            const passengersValue = document.getElementById('passengersValue');
+            const count = this.value;
+            passengersValue.textContent = count === '1' ? '1 Passenger' : `${count} Passengers`;
+            updateBookingSummary();
+        });
+
+        // Setup event listeners
+        document.getElementById('tripSelect').addEventListener('change', updateBookingSummary);
+        document.getElementById('tripDate').addEventListener('change', updateBookingSummary);
+
+        // Form submission handler
+        document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            console.log('Form submitted');
+
+            if (!validateForm()) {
+                console.log('Form validation failed');
+                return;
+            }
+
+            console.log('Form validation passed, submitting booking...');
+            const success = await handleBookingSubmit();
+
+            if (success) {
+                console.log('Booking successful, resetting form...');
+                this.reset();
+                updateBookingSummary();
+
+                // Re-fill user data after reset
+                const userEmail = localStorage.getItem('currentUserEmail');
+                const userFirstName = localStorage.getItem('currentUserFirstName');
+                if (userEmail) {
+                    document.getElementById('email').value = userEmail;
+                }
+                if (userFirstName) {
+                    document.getElementById('firstName').value = userFirstName;
+                }
+
+                // Reset min date
+                document.getElementById('tripDate').min = today;
+
+                // Reset passengers range to default
+                document.getElementById('passengers').value = 1;
+                document.getElementById('passengersValue').textContent = '1 Passenger';
+            }
+        });
+
+        // Setup logout button
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Logging out...');
+            // Clear user data and redirect
+            localStorage.clear();
+            window.location.href = 'user-management.html';
+        });
+
+        console.log('Page initialization complete');
+    });
+</script>
+</body>
+</html>

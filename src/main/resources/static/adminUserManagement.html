@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boat Safari - User Management</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #0a2463;
+            --secondary-blue: #1e3a8a;
+            --accent-blue: #3b82f6;
+            --light-blue: #dbeafe;
+            --white: #ffffff;
+            --black: #1f2937;
+            --gray: #6b7280;
+            --light-gray: #f3f4f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--black);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: var(--white);
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--primary-blue) !important;
+        }
+
+        .navbar-brand i {
+            color: var(--accent-blue);
+            margin-right: 8px;
+        }
+
+        .nav-link {
+            color: var(--black) !important;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-blue) !important;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            border: none;
+            padding: 10px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .user-welcome {
+            color: var(--primary-blue);
+            font-weight: 600;
+            margin-right: 15px;
+        }
+
+        .user-welcome i {
+            color: var(--accent-blue);
+            margin-right: 5px;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: var(--white);
+            padding: 60px 0;
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: var(--light-blue);
+            opacity: 0.9;
+        }
+
+        .management-section {
+            padding: 20px 0 60px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: var(--primary-blue);
+            border-bottom: 3px solid var(--accent-blue);
+            padding-bottom: 10px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            border-radius: 15px 15px 0 0 !important;
+            padding: 20px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .card-header-admin {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+        }
+
+        .card-header-staff {
+            background: linear-gradient(135deg, #d97706, #f59e0b);
+            color: white;
+        }
+
+        .card-header-owner {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+        }
+
+        .card-header-manager {
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: white;
+        }
+
+        .card-header-customer {
+            background: linear-gradient(135deg, #6b7280, #9ca3af);
+            color: white;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th {
+            background-color: var(--light-blue);
+            color: var(--primary-blue);
+            font-weight: 600;
+            border: none;
+            padding: 15px;
+        }
+
+        .table td {
+            padding: 15px;
+            vertical-align: middle;
+            border-color: var(--light-gray);
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+
+        .role-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .role-admin {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .role-staff {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+
+        .role-owner {
+            background-color: #d1fae5;
+            color: #059669;
+        }
+
+        .role-manager {
+            background-color: #e0e7ff;
+            color: #4f46e5;
+        }
+
+        .role-customer {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .status-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #10b981;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .status-text {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            color: #059669;
+        }
+
+        .status-inactive {
+            color: #dc2626;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        .search-box {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-control, .form-select {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 12px 15px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid var(--accent-blue);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .role-tabs {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            border-radius: 10px;
+            margin: 0 5px;
+            padding: 12px 20px;
+            font-weight: 500;
+            color: var(--gray);
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link.active {
+            background: var(--accent-blue);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-tabs .nav-link:hover {
+            border: none;
+            background: var(--light-blue);
+            color: var(--accent-blue);
+        }
+
+        .role-section {
+            display: none;
+        }
+
+        .role-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .user-count-badge {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+
+        footer {
+            background-color: var(--black);
+            padding: 40px 0 20px;
+            margin-top: 60px;
+            color: var(--white);
+        }
+
+        .footer-heading {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--accent-blue);
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: var(--light-gray);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-blue);
+            padding-left: 5px;
+        }
+
+        .copyright {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            margin-top: 30px;
+            text-align: center;
+            color: var(--light-gray);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .stats-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs .nav-link {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Fix for modal input fields */
+        .modal .form-control:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+        }
+
+        .modal .form-control {
+            background-color: white;
+            color: var(--black);
+        }
+
+        .modal .form-control::placeholder {
+            color: var(--gray);
+            opacity: 0.7;
+        }
+
+        .modal .form-select {
+            background-color: white;
+            color: var(--black);
+        }
+
+        .modal .form-check-input:checked {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        /* Ensure modal backdrop doesn't interfere */
+        .modal-backdrop {
+            z-index: 1040;
+        }
+
+        .modal {
+            z-index: 1050;
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-light sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="#"><i class="fas fa-ship"></i> Boat Safari</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <!-- Show Dashboard only for SYSTEM_ADMINISTRATOR -->
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Home</a>
+                </li
+
+                    <li class="nav-item">
+                        <a class="nav-link active" href="adminUserManagement.html">User Management</a>
+                    </li>
+
+            </ul>
+            <div class="d-flex align-items-center">
+                <span class="user-welcome">
+                    <i class="fas fa-user-shield me-2"></i>
+                    <span id="userName">Admin</span>
+                    <small class="ms-2 badge bg-secondary" id="userRoleBadge"></small>
+                </span>
+                <a href="user-management.html" class="btn btn-outline-primary ms-3" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="page-title">User Management</h1>
+                <p class="page-subtitle">Manage user accounts, roles, and access permissions across the system</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <button class="btn btn-light btn-lg" data-bs-toggle="modal" data-bs-target="#createUserModal">
+                    <i class="fas fa-user-plus me-2"></i>Create New User
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Management Section -->
+<section class="management-section">
+    <div class="container">
+        <!-- Statistics Cards -->
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-number" id="totalUsers">0</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="activeUsers">0</div>
+                <div class="stat-label">Active Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="adminUsers">0</div>
+                <div class="stat-label">Administrators</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="staffUsers">0</div>
+                <div class="stat-label">Staff Members</div>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="search-box">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="searchInput" class="form-label">Search Users</label>
+                    <input type="text" class="form-control" id="searchInput" placeholder="Search by name, email, or username...">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="statusFilter" class="form-label">Filter by Status</label>
+                    <select class="form-select" id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="active">Active Only</option>
+                        <option value="inactive">Inactive Only</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mb-3 d-flex align-items-end">
+                    <button class="btn btn-primary w-100" id="resetFilters">
+                        <i class="fas fa-refresh me-2"></i>Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Role Tabs -->
+        <div class="role-tabs">
+            <ul class="nav nav-tabs" id="roleTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">
+                        <i class="fas fa-users me-2"></i>All Users
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="admin-tab" data-bs-toggle="tab" data-bs-target="#admin" type="button" role="tab">
+                        <i class="fas fa-user-shield me-2"></i>Administrators
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="userManager-tab" data-bs-toggle="tab" data-bs-target="#userManager" type="button" role="tab">
+                        <i class="fas fa-user-cog me-2"></i>User Managers
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="staff-tab" data-bs-toggle="tab" data-bs-target="#staff" type="button" role="tab">
+                        <i class="fas fa-user-tie me-2"></i>Staff
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="owner-tab" data-bs-toggle="tab" data-bs-target="#owner" type="button" role="tab">
+                        <i class="fas fa-ship me-2"></i>Boat Owners
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="operationsManager-tab" data-bs-toggle="tab" data-bs-target="#operationsManager" type="button" role="tab">
+                        <i class="fas fa-clipboard-list me-2"></i>Operations Managers
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="customer-tab" data-bs-toggle="tab" data-bs-target="#customer" type="button" role="tab">
+                        <i class="fas fa-user me-2"></i>Customers
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Role Tables -->
+        <div class="tab-content" id="roleTabContent">
+            <!-- All Users Tab -->
+            <div class="tab-pane fade show active" id="all" role="tabpanel">
+                <div class="card">
+                    <div class="card-header" style="background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)); color: white;">
+                        <i class="fas fa-users me-2"></i>All Users
+                        <span class="user-count-badge" id="allUsersCount">0 users</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="allUsersTable">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Full Name</th>
+                                    <th>Role</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody id="allUsersTableBody">
+                                <!-- All users will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="empty-state" id="allUsersEmpty">
+                            <i class="fas fa-users"></i>
+                            <p>No users found matching your criteria.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Administrators Tab -->
+            <div class="tab-pane fade" id="admin" role="tabpanel">
+                <div class="card">
+                    <div class="card-header card-header-admin">
+                        <i class="fas fa-user-shield me-2"></i>System Administrators
+                        <span class="user-count-badge" id="adminUsersCount">0 admins</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="adminUsersTable">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Full Name</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody id="adminUsersTableBody">
+                                <!-- Admin users will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="empty-state" id="adminUsersEmpty">
+                            <i class="fas fa-user-shield"></i>
+                            <p>No administrators found.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Managers Tab -->
+            <div class="tab-pane fade" id="userManager" role="tabpanel">
+                <div class="card">
+                    <div class="card-header card-header-manager">
+                        <i class="fas fa-user-cog me-2"></i>User Managers
+                        <span class="user-count-badge" id="userManagerUsersCount">0 user managers</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="userManagerUsersTable">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Full Name</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody id="userManagerUsersTableBody">
+                                <!-- User manager users will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="empty-state" id="userManagerUsersEmpty">
+                            <i class="fas fa-user-cog"></i>
+                            <p>No user managers found.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Staff Tab -->
+            <div class="tab-pane fade" id="staff" role="tabpanel">
+                <div class="card">
+                    <div class="card-header card-header-staff">
+                        <i class="fas fa-user-tie me-2"></i>Staff Members
+                        <span class="user-count-badge" id="staffUsersCount">0 staff</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="staffUsersTable">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Full Name</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody id="staffUsersTableBody">
+                                <!-- Staff users will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="empty-state" id="staffUsersEmpty">
+                            <i class="fas fa-user-tie"></i>
+                            <p>No staff members found.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boat Owners Tab -->
+            <div class="tab-pane fade" id="owner" role="tabpanel">
+                <div class="card">
+                    <div class="card-header card-header-owner">
+                        <i class="fas fa-ship me-2"></i>Boat Owners
+                        <span class="user-count-badge" id="ownerUsersCount">0 owners</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="ownerUsersTable">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Full Name</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody id="ownerUsersTableBody">
+                                <!-- Boat owner users will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="empty-state" id="ownerUsersEmpty">
+                            <i class="fas fa-ship"></i>
+                            <p>No boat owners found.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operations Managers Tab -->
+            <div class="tab-pane fade" id="operationsManager" role="tabpanel">
+                <div class="card">
+                    <div class="card-header card-header-manager">
+                        <i class="fas fa-clipboard-list me-2"></i>Operations Managers
+                        <span class="user-count-badge" id="operationsManagerUsersCount">0 operations managers</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="operationsManagerUsersTable">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Full Name</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody id="operationsManagerUsersTableBody">
+                                <!-- Operations manager users will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="empty-state" id="operationsManagerUsersEmpty">
+                            <i class="fas fa-clipboard-list"></i>
+                            <p>No operations managers found.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customers Tab -->
+            <div class="tab-pane fade" id="customer" role="tabpanel">
+                <div class="card">
+                    <div class="card-header card-header-customer">
+                        <i class="fas fa-user me-2"></i>Customers
+                        <span class="user-count-badge" id="customerUsersCount">0 customers</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="customerUsersTable">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Full Name</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody id="customerUsersTableBody">
+                                <!-- Customer users will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="empty-state" id="customerUsersEmpty">
+                            <i class="fas fa-user"></i>
+                            <p>No customers found.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Create User Modal -->
+<div class="modal fade" id="createUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-user-plus me-2"></i>Create New User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createUserForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="createFirstName" class="form-label">First Name *</label>
+                            <input type="text" class="form-control" id="createFirstName" placeholder="Enter first name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="createLastName" class="form-label">Last Name *</label>
+                            <input type="text" class="form-control" id="createLastName" placeholder="Enter last name" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="createUsername" class="form-label">Username *</label>
+                            <input type="text" class="form-control" id="createUsername" placeholder="Enter username" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="createEmail" class="form-label">Email Address *</label>
+                            <input type="email" class="form-control" id="createEmail" placeholder="Enter email address" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="createPassword" class="form-label">Password *</label>
+                            <input type="password" class="form-control" id="createPassword" placeholder="Enter password" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="createPhone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="createPhone" placeholder="Enter phone number">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createRole" class="form-label">User Role *</label>
+                        <select class="form-select" id="createRole" required>
+                            <option value="">Select Role</option>
+                            <option value="SYSTEM_ADMINISTRATOR">System Administrator</option>
+                            <option value="USER_MANAGER">User Manager</option>
+                            <option value="STAFF">Staff Member</option>
+                            <option value="BOAT_OWNER">Boat Owner</option>
+                            <option value="OPERATIONS_MANAGER">Operations Manager</option>
+                            <option value="CUSTOMER">Customer</option>
+                        </select>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="createActive" checked>
+                        <label class="form-check-label" for="createActive">
+                            Active Account (User can login immediately)
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="createUserBtn">Create User</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm">
+                    <input type="hidden" id="editUserId">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editFirstName" class="form-label">First Name *</label>
+                            <input type="text" class="form-control" id="editFirstName" placeholder="Enter first name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editLastName" class="form-label">Last Name *</label>
+                            <input type="text" class="form-control" id="editLastName" placeholder="Enter last name" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editUsername" class="form-label">Username *</label>
+                            <input type="text" class="form-control" id="editUsername" placeholder="Enter username" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editEmail" class="form-label">Email Address *</label>
+                            <input type="email" class="form-control" id="editEmail" placeholder="Enter email address" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPhone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="editPhone" placeholder="Enter phone number">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editRole" class="form-label">User Role *</label>
+                        <select class="form-select" id="editRole" required>
+                            <option value="">Select Role</option>
+                            <option value="SYSTEM_ADMINISTRATOR">System Administrator</option>
+                            <option value="USER_MANAGER">User Manager</option>
+                            <option value="STAFF">Staff Member</option>
+                            <option value="BOAT_OWNER">Boat Owner</option>
+                            <option value="OPERATIONS_MANAGER">Operations Manager</option>
+                            <option value="CUSTOMER">Customer</option>
+                        </select>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="editActive">
+                        <label class="form-check-label" for="editActive">
+                            Active Account
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="updateUserBtn">Update User</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <h4 class="footer-heading">Boat Safari Admin</h4>
+                <p>Complete administration system for managing Boat Safari operations, users, and content.</p>
+            </div>
+            <div class="col-md-2 mb-4">
+                <h4 class="footer-heading">Admin Links</h4>
+                <ul class="footer-links">
+                    <li><a href="admin.html">Dashboard</a></li>
+                    <li><a href="adminUserManagement.html">User Management</a></li>
+                    <li><a href="adminHome.html">Home Management</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-4">
+                <h4 class="footer-heading">Support</h4>
+                <ul class="footer-links">
+                    <li><i class="fas fa-envelope me-2"></i>admin@boatsafari.com</li>
+                    <li><i class="fas fa-phone me-2"></i>+1 234 567 8900</li>
+                    <li><i class="fas fa-clock me-2"></i>24/7 Admin Support</li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-4">
+                <h4 class="footer-heading">System Info</h4>
+                <ul class="footer-links">
+                    <li>Users: <span id="footerUserCount">0</span></li>
+                    <li>Last Updated: <span id="lastUpdated">Just now</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2023 Boat Safari Trip Management System - Admin Panel. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // API Base URL
+    const API_BASE = 'http://localhost:8080/api/auth';
+
+    // Global variables
+    let allUsers = [];
+    let currentEditingUserId = null;
+
+    // Utility functions
+    function getUserDisplayName() {
+        const userFirstName = localStorage.getItem('currentUserFirstName');
+        const userName = localStorage.getItem('currentUserName');
+        return userFirstName || userName || 'Admin';
+    }
+
+    function isLoggedIn() {
+        return localStorage.getItem('currentUserToken') !== null;
+    }
+
+    function isAdminOrUserManager() {
+        const userRole = localStorage.getItem('currentUserRole');
+        console.log('🔐 Checking access for role:', userRole);
+
+        // Check for both ADMIN and USER_MANAGER roles
+        const hasAccess = userRole === 'SYSTEM_ADMINISTRATOR' || userRole === 'USER_MANAGER';
+        console.log('✅ Access granted:', hasAccess);
+        return hasAccess;
+    }
+
+    function logout() {
+        localStorage.removeItem('currentUserToken');
+        localStorage.removeItem('currentUserEmail');
+        localStorage.removeItem('currentUserName');
+        localStorage.removeItem('currentUserRole');
+        localStorage.removeItem('currentUserFirstName');
+        window.location.href = 'user-management.html';
+    }
+
+    function getRoleBadgeClass(role) {
+        switch(role) {
+            case 'SYSTEM_ADMINISTRATOR': return 'role-admin';
+            case 'USER_MANAGER': return 'role-manager';
+            case 'STAFF': return 'role-staff';
+            case 'BOAT_OWNER': return 'role-owner';
+            case 'OPERATIONS_MANAGER': return 'role-manager';
+            case 'CUSTOMER': return 'role-customer';
+            default: return 'role-customer';
+        }
+    }
+
+    function getRoleDisplayName(role) {
+        switch(role) {
+            case 'SYSTEM_ADMINISTRATOR': return 'Administrator';
+            case 'USER_MANAGER': return 'User Manager';
+            case 'STAFF': return 'Staff';
+            case 'BOAT_OWNER': return 'Boat Owner';
+            case 'OPERATIONS_MANAGER': return 'Operations Manager';
+            case 'CUSTOMER': return 'Customer';
+            default: return role;
+        }
+    }
+
+    function getCardHeaderClass(role) {
+        switch(role) {
+            case 'SYSTEM_ADMINISTRATOR': return 'card-header-admin';
+            case 'USER_MANAGER': return 'card-header-manager';
+            case 'STAFF': return 'card-header-staff';
+            case 'BOAT_OWNER': return 'card-header-owner';
+            case 'OPERATIONS_MANAGER': return 'card-header-manager';
+            case 'CUSTOMER': return 'card-header-customer';
+            default: return '';
+        }
+    }
+
+    // Setup navigation based on user role
+    function setupNavigationBasedOnRole() {
+        const userRole = localStorage.getItem('currentUserRole');
+        console.log('🔄 Setting up navigation for role:', userRole);
+
+        const dashboardNav = document.getElementById('dashboardNav');
+        const homeManagementNav = document.getElementById('homeManagementNav');
+        const userRoleBadge = document.getElementById('userRoleBadge');
+
+        // Set role badge
+        if (userRoleBadge) {
+            userRoleBadge.textContent = getRoleDisplayName(userRole);
+            console.log('🏷️ Setting role badge to:', getRoleDisplayName(userRole));
+
+            // Set badge color based on role
+            switch(userRole) {
+                case 'SYSTEM_ADMINISTRATOR':
+                    userRoleBadge.className = 'ms-2 badge bg-danger';
+                    break;
+                case 'USER_MANAGER':
+                    userRoleBadge.className = 'ms-2 badge bg-primary';
+                    break;
+                default:
+                    userRoleBadge.className = 'ms-2 badge bg-secondary';
+            }
+        }
+
+        // Show/hide navigation items based on role
+        if (dashboardNav) {
+            const showDashboard = userRole === 'SYSTEM_ADMINISTRATOR';
+            dashboardNav.style.display = showDashboard ? 'block' : 'none';
+            console.log('📊 Dashboard nav visible:', showDashboard);
+        }
+
+        if (homeManagementNav) {
+            const showHomeManagement = userRole === 'SYSTEM_ADMINISTRATOR';
+            homeManagementNav.style.display = showHomeManagement ? 'block' : 'none';
+            console.log('🏠 Home Management nav visible:', showHomeManagement);
+        }
+    }
+
+    // Notification System
+    function showNotification(message, type = 'success') {
+        const existingNotification = document.querySelector('.custom-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+
+        const notification = document.createElement('div');
+        notification.className = `custom-notification alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: none;
+            border-radius: 10px;
+        `;
+
+        notification.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} me-2"></i>
+                <span>${message}</span>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+
+    // User management functions
+    function showLoading(show) {
+        // You can add a loading indicator if needed
+    }
+
+    function displayUserTable(tableBodyId, users, emptyStateId) {
+        const tbody = document.getElementById(tableBodyId);
+        const emptyState = document.getElementById(emptyStateId);
+
+        if (users.length === 0) {
+            tbody.innerHTML = '';
+            emptyState.style.display = 'block';
+            return;
+        }
+
+        emptyState.style.display = 'none';
+
+        tbody.innerHTML = users.map(user => {
+            // Convert is_active to boolean - handle both number (1/0) and boolean values
+            const isActive = Boolean(user.is_active !== undefined ? user.is_active : user.isActive);
+
+            return `
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td>${user.first_name || user.firstName} ${user.last_name || user.lastName}</td>
+                    ${tableBodyId === 'allUsersTableBody' ?
+                `<td><span class="role-badge ${getRoleBadgeClass(user.role)}">${getRoleDisplayName(user.role)}</span></td>` :
+                ''
+            }
+                    <td>${user.phone || 'N/A'}</td>
+                    <td>
+                        <div class="status-toggle">
+                            <label class="switch">
+                                <input type="checkbox" ${isActive ? 'checked' : ''}
+                                       onchange="handleStatusToggle(${user.id}, this.checked)">
+                                <span class="slider"></span>
+                            </label>
+                            <span class="status-text ${isActive ? 'status-active' : 'status-inactive'}">
+                                ${isActive ? 'Active' : 'Inactive'}
+                            </span>
+                        </div>
+                    </td>
+                    <td>${new Date(user.created_at || user.createdAt).toLocaleDateString()}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-outline-primary" onclick="editUser(${user.id})"
+                                    ${user.role === 'SYSTEM_ADMINISTRATOR' ? 'disabled' : ''}>
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="confirmDeleteUser(${user.id})"
+                                    ${user.role === 'SYSTEM_ADMINISTRATOR' ? 'disabled' : ''}>
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function displayUsersByRole(users) {
+        // Filter users by role
+        const admins = users.filter(u => u.role === 'SYSTEM_ADMINISTRATOR');
+        const userManagers = users.filter(u => u.role === 'USER_MANAGER');
+        const staff = users.filter(u => u.role === 'STAFF');
+        const owners = users.filter(u => u.role === 'BOAT_OWNER');
+        const operationsManagers = users.filter(u => u.role === 'OPERATIONS_MANAGER');
+        const customers = users.filter(u => u.role === 'CUSTOMER');
+
+        // Update user counts in badges
+        document.getElementById('allUsersCount').textContent = `${users.length} users`;
+        document.getElementById('adminUsersCount').textContent = `${admins.length} admins`;
+        document.getElementById('userManagerUsersCount').textContent = `${userManagers.length} user managers`;
+        document.getElementById('staffUsersCount').textContent = `${staff.length} staff`;
+        document.getElementById('ownerUsersCount').textContent = `${owners.length} owners`;
+        document.getElementById('operationsManagerUsersCount').textContent = `${operationsManagers.length} operations managers`;
+        document.getElementById('customerUsersCount').textContent = `${customers.length} customers`;
+
+        // Display users in respective tables
+        displayUserTable('allUsersTableBody', users, 'allUsersEmpty');
+        displayUserTable('adminUsersTableBody', admins, 'adminUsersEmpty');
+        displayUserTable('userManagerUsersTableBody', userManagers, 'userManagerUsersEmpty');
+        displayUserTable('staffUsersTableBody', staff, 'staffUsersEmpty');
+        displayUserTable('ownerUsersTableBody', owners, 'ownerUsersEmpty');
+        displayUserTable('operationsManagerUsersTableBody', operationsManagers, 'operationsManagerUsersEmpty');
+        displayUserTable('customerUsersTableBody', customers, 'customerUsersEmpty');
+    }
+
+    function updateStatistics(users) {
+        const totalUsers = users.length;
+        // Count active users - handle both is_active (number) and isActive (boolean)
+        const activeUsers = users.filter(u =>
+            (u.is_active !== undefined ? u.is_active : u.isActive) === true ||
+            (u.is_active !== undefined ? u.is_active : u.isActive) === 1
+        ).length;
+        const adminUsers = users.filter(u => u.role === 'SYSTEM_ADMINISTRATOR').length;
+        const staffUsers = users.filter(u => u.role === 'STAFF').length;
+
+        document.getElementById('totalUsers').textContent = totalUsers;
+        document.getElementById('activeUsers').textContent = activeUsers;
+        document.getElementById('adminUsers').textContent = adminUsers;
+        document.getElementById('staffUsers').textContent = staffUsers;
+        document.getElementById('footerUserCount').textContent = totalUsers;
+        document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+    }
+
+    function filterUsers() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const statusFilter = document.getElementById('statusFilter').value;
+
+        const filteredUsers = allUsers.filter(user => {
+            const matchesSearch = !searchTerm ||
+                user.username.toLowerCase().includes(searchTerm) ||
+                user.email.toLowerCase().includes(searchTerm) ||
+                `${user.first_name || user.firstName} ${user.last_name || user.lastName}`.toLowerCase().includes(searchTerm);
+
+            const isActive = Boolean(user.is_active !== undefined ? user.is_active : user.isActive);
+            const matchesStatus = !statusFilter ||
+                (statusFilter === 'active' && isActive) ||
+                (statusFilter === 'inactive' && !isActive);
+
+            return matchesSearch && matchesStatus;
+        });
+
+        displayUsersByRole(filteredUsers);
+    }
+
+    // User actions
+    function editUser(userId) {
+        const user = allUsers.find(u => u.id === userId);
+        if (!user) return;
+
+        currentEditingUserId = userId;
+        document.getElementById('editUserId').value = user.id;
+        document.getElementById('editFirstName').value = user.first_name || user.firstName;
+        document.getElementById('editLastName').value = user.last_name || user.lastName;
+        document.getElementById('editUsername').value = user.username;
+        document.getElementById('editEmail').value = user.email;
+        document.getElementById('editPhone').value = user.phone || '';
+        document.getElementById('editRole').value = user.role;
+        document.getElementById('editActive').checked = Boolean(user.is_active !== undefined ? user.is_active : user.isActive);
+
+        const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+        modal.show();
+    }
+
+    function confirmDeleteUser(userId) {
+        const user = allUsers.find(u => u.id === userId);
+        if (!user) return;
+
+        const confirmationModal = `
+            <div class="modal fade" id="confirmDeleteModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Confirm Deletion
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete the user <strong>${user.first_name || user.firstName} ${user.last_name || user.lastName}</strong>?</p>
+                            <p class="text-muted">This action cannot be undone.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-danger" onclick="deleteUser(${userId})">
+                                <i class="fas fa-trash me-2"></i>Delete User
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const existingModal = document.getElementById('confirmDeleteModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        document.body.insertAdjacentHTML('beforeend', confirmationModal);
+        const modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+        modal.show();
+
+        document.getElementById('confirmDeleteModal').addEventListener('hidden.bs.modal', function() {
+            this.remove();
+        });
+    }
+
+    async function handleStatusToggle(userId, newStatus) {
+        console.log(`Toggling user ${userId} to ${newStatus ? 'active' : 'inactive'}`);
+
+        try {
+            // Use the correct endpoints based on the new status
+            const endpoint = newStatus ? 'activate' : 'deactivate';
+
+            const response = await fetch(`${API_BASE}/admin/users/${userId}/${endpoint}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('currentUserToken')}`,
+                    'X-Admin-User': localStorage.getItem('currentUserName')
+                }
+            });
+
+            if (response.ok) {
+                showNotification(`User ${newStatus ? 'activated' : 'deactivated'} successfully!`, 'success');
+                await loadUsers(); // Reload users to get updated data
+            } else {
+                const errorText = await response.text();
+                throw new Error(errorText || `Failed to ${endpoint} user`);
+            }
+        } catch (error) {
+            console.error('Error toggling user status:', error);
+            showNotification(`Failed to update user status: ${error.message}`, 'error');
+            await loadUsers(); // Reload to reset the UI to actual server state
+        }
+    }
+
+    async function deleteUser(userId) {
+        try {
+            const response = await fetch(`${API_BASE}/admin/users/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('currentUserToken')}`,
+                    'X-Admin-User': localStorage.getItem('currentUserName')
+                }
+            });
+
+            if (response.ok) {
+                showNotification('User deleted successfully!', 'success');
+                await loadUsers();
+            } else {
+                throw new Error('Failed to delete user');
+            }
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            showNotification('Failed to delete user. Using demo mode.', 'error');
+            // For demo, remove locally
+            allUsers = allUsers.filter(u => u.id !== userId);
+            displayUsersByRole(allUsers);
+            updateStatistics(allUsers);
+        }
+    }
+
+    async function loadUsers() {
+        try {
+            showLoading(true);
+            const response = await fetch(`${API_BASE}/admin/users`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('currentUserToken')}`
+                }
+            });
+
+            if (response.ok) {
+                const users = await response.json();
+
+                // Transform the users to handle both database field names and frontend expectations
+                allUsers = users.map(user => ({
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    first_name: user.firstName,
+                    last_name: user.lastName,
+                    phone: user.phone,
+                    role: user.role,
+                    isActive: user.active,
+                    is_active: user.active ? 1 : 0,
+                    createdAt: user.createdAt,
+                    created_at: user.createdAt
+                }));
+
+                displayUsersByRole(allUsers);
+                updateStatistics(allUsers);
+                showNotification(`Loaded ${users.length} users successfully`, 'success');
+            } else {
+                throw new Error('Failed to load users');
+            }
+        } catch (error) {
+            console.error('Error loading users:', error);
+            showNotification('Failed to load users. Using demo data.', 'error');
+            loadMockUsers();
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    async function createUser(userData) {
+        try {
+            const response = await fetch(`${API_BASE}/admin/users`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('currentUserToken')}`,
+                    'X-Admin-User': localStorage.getItem('currentUserName')
+                },
+                body: JSON.stringify(userData)
+            });
+
+            if (response.ok) {
+                const newUser = await response.json();
+                showNotification(`User "${userData.username}" created successfully!`, 'success');
+                await loadUsers();
+                document.getElementById('createUserForm').reset();
+                return newUser;
+            } else {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Failed to create user');
+            }
+        } catch (error) {
+            console.error('Error creating user:', error);
+            showNotification(`Failed to create user: ${error.message}`, 'error');
+            throw error;
+        }
+    }
+
+    function validateUserForm(formData) {
+        const errors = [];
+        if (!formData.firstName.trim()) errors.push('First name is required');
+        if (!formData.lastName.trim()) errors.push('Last name is required');
+        if (!formData.username.trim()) errors.push('Username is required');
+        if (!formData.email.trim()) errors.push('Email is required');
+        if (!formData.password) errors.push('Password is required');
+        if (!formData.role) errors.push('Role is required');
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (formData.email && !emailRegex.test(formData.email)) {
+            errors.push('Please enter a valid email address');
+        }
+
+        if (formData.password && formData.password.length < 6) {
+            errors.push('Password must be at least 6 characters long');
+        }
+
+        return errors;
+    }
+
+    function loadMockUsers() {
+        // Mock data for demonstration - using database field names
+        allUsers = [
+            {
+                id: 1,
+                username: 'admin',
+                email: 'admin@boatsafari.com',
+                first_name: 'System',
+                last_name: 'Administrator',
+                firstName: 'System',
+                lastName: 'Administrator',
+                role: 'SYSTEM_ADMINISTRATOR',
+                phone: '+94123456789',
+                is_active: 1,
+                isActive: true,
+                created_at: '2023-01-15T10:30:00',
+                createdAt: '2023-01-15T10:30:00'
+            },
+            {
+                id: 2,
+                username: 'usermgr1',
+                email: 'usermgr@boatsafari.lk',
+                first_name: 'Sanduni',
+                last_name: 'Perera',
+                firstName: 'Sanduni',
+                lastName: 'Perera',
+                role: 'USER_MANAGER',
+                phone: '+94123456801',
+                is_active: 1,
+                isActive: true,
+                created_at: '2023-02-20T14:15:00',
+                createdAt: '2023-02-20T14:15:00'
+            },
+            {
+                id: 3,
+                username: 'staff1',
+                email: 'staff@boatsafari.com',
+                first_name: 'Jane',
+                last_name: 'Smith',
+                firstName: 'Jane',
+                lastName: 'Smith',
+                role: 'STAFF',
+                phone: '+94123456788',
+                is_active: 1,
+                isActive: true,
+                created_at: '2023-02-20T14:15:00',
+                createdAt: '2023-02-20T14:15:00'
+            },
+            {
+                id: 4,
+                username: 'owner1',
+                email: 'owner@boatsafari.com',
+                first_name: 'Mike',
+                last_name: 'Johnson',
+                firstName: 'Mike',
+                lastName: 'Johnson',
+                role: 'BOAT_OWNER',
+                phone: '+94123456787',
+                is_active: 1,
+                isActive: true,
+                created_at: '2023-03-10T09:45:00',
+                createdAt: '2023-03-10T09:45:00'
+            },
+            {
+                id: 5,
+                username: 'manager1',
+                email: 'manager@boatsafari.com',
+                first_name: 'Sarah',
+                last_name: 'Wilson',
+                firstName: 'Sarah',
+                lastName: 'Wilson',
+                role: 'OPERATIONS_MANAGER',
+                phone: '+94123456786',
+                is_active: 1,
+                isActive: true,
+                created_at: '2023-03-15T11:20:00',
+                createdAt: '2023-03-15T11:20:00'
+            },
+            {
+                id: 6,
+                username: 'customer1',
+                email: 'customer@boatsafari.com',
+                first_name: 'John',
+                last_name: 'Doe',
+                firstName: 'John',
+                lastName: 'Doe',
+                role: 'CUSTOMER',
+                phone: '+94123456785',
+                is_active: 0,
+                isActive: false,
+                created_at: '2023-04-01T16:40:00',
+                createdAt: '2023-04-01T16:40:00'
+            }
+        ];
+        displayUsersByRole(allUsers);
+        updateStatistics(allUsers);
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        // Debug localStorage
+        console.log('🔍 DEBUG LOCALSTORAGE:');
+        console.log('Token:', localStorage.getItem('currentUserToken'));
+        console.log('Role:', localStorage.getItem('currentUserRole'));
+        console.log('Name:', localStorage.getItem('currentUserName'));
+        console.log('Email:', localStorage.getItem('currentUserEmail'));
+
+        if (!isLoggedIn()) {
+            console.log('❌ User not logged in');
+            window.location.href = 'user-management.html';
+            return;
+        }
+
+        // UPDATED: Check for both ADMIN and USER_MANAGER roles
+        const userRole = localStorage.getItem('currentUserRole');
+        console.log('👤 Current user role:', userRole);
+
+        if (!isAdminOrUserManager()) {
+            console.log('🚫 Access denied for role:', userRole);
+            alert('Access denied. Admin or User Manager privileges required.');
+
+            // Redirect based on user role
+            switch(userRole) {
+                case 'STAFF':
+                    window.location.href = 'schedule.html';
+                    break;
+                case 'BOAT_OWNER':
+                    window.location.href = 'boats.html';
+                    break;
+                case 'OPERATIONS_MANAGER':
+                    window.location.href = 'reports.html';
+                    break;
+                case 'CUSTOMER':
+                default:
+                    window.location.href = 'booking.html';
+                    break;
+            }
+            return;
+        }
+
+        console.log('✅ Access granted for role:', userRole);
+        document.getElementById('userName').textContent = getUserDisplayName();
+        setupNavigationBasedOnRole();
+        loadUsers();
+
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            logout();
+        });
+
+        document.getElementById('searchInput').addEventListener('input', filterUsers);
+        document.getElementById('statusFilter').addEventListener('change', filterUsers);
+        document.getElementById('resetFilters').addEventListener('click', function() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = '';
+            filterUsers();
+        });
+
+        // Fix for modal form handling
+        document.getElementById('createUserBtn').addEventListener('click', async function() {
+            const formData = {
+                firstName: document.getElementById('createFirstName').value.trim(),
+                lastName: document.getElementById('createLastName').value.trim(),
+                username: document.getElementById('createUsername').value.trim(),
+                email: document.getElementById('createEmail').value.trim(),
+                password: document.getElementById('createPassword').value,
+                phone: document.getElementById('createPhone').value.trim(),
+                role: document.getElementById('createRole').value,
+                isActive: document.getElementById('createActive').checked
+            };
+
+            console.log('Create user form data:', formData);
+
+            const errors = validateUserForm(formData);
+            if (errors.length > 0) {
+                showNotification(`Please fix the following errors: ${errors.join(', ')}`, 'error');
+                return;
+            }
+
+            const button = this;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating...';
+            button.disabled = true;
+
+            try {
+                await createUser(formData);
+                const modal = bootstrap.Modal.getInstance(document.getElementById('createUserModal'));
+                modal.hide();
+            } catch (error) {
+                // Error handled in createUser
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        });
+
+        // Update user function
+        document.getElementById('updateUserBtn').addEventListener('click', async function() {
+            const formData = {
+                firstName: document.getElementById('editFirstName').value.trim(),
+                lastName: document.getElementById('editLastName').value.trim(),
+                username: document.getElementById('editUsername').value.trim(),
+                email: document.getElementById('editEmail').value.trim(),
+                phone: document.getElementById('editPhone').value.trim(),
+                role: document.getElementById('editRole').value,
+                isActive: document.getElementById('editActive').checked
+            };
+
+            console.log('Update user form data:', formData);
+
+            const errors = [];
+            if (!formData.firstName) errors.push('First name is required');
+            if (!formData.lastName) errors.push('Last name is required');
+            if (!formData.username) errors.push('Username is required');
+            if (!formData.email) errors.push('Email is required');
+            if (!formData.role) errors.push('Role is required');
+
+            if (errors.length > 0) {
+                showNotification(`Please fix the following errors: ${errors.join(', ')}`, 'error');
+                return;
+            }
+
+            const button = this;
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Updating...';
+            button.disabled = true;
+
+            try {
+                // For now, simulate update
+                console.log('Updating user:', currentEditingUserId, formData);
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                showNotification(`User "${formData.username}" updated successfully!`, 'success');
+                await loadUsers();
+                const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+                modal.hide();
+            } catch (error) {
+                showNotification(`Failed to update user: ${error.message}`, 'error');
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        });
+
+        document.getElementById('createUserModal').addEventListener('hidden.bs.modal', function() {
+            document.getElementById('createUserForm').reset();
+        });
+    });
+</script>
+</body>
+</html>

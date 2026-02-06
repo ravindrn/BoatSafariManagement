@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boat Safari - Home</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #0a2463;
+            --secondary-blue: #1e3a8a;
+            --accent-blue: #3b82f6;
+            --light-blue: #dbeafe;
+            --white: #ffffff;
+            --black: #1f2937;
+            --gray: #6b7280;
+            --light-gray: #f3f4f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--black);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: var(--white);
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--primary-blue) !important;
+        }
+
+        .navbar-brand i {
+            color: var(--accent-blue);
+            margin-right: 8px;
+        }
+
+        .nav-link {
+            color: var(--black) !important;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--accent-blue) !important;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            border: none;
+            padding: 10px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .hero-section {
+            padding: 150px 0 100px;
+            background-image: linear-gradient(rgba(10, 36, 99, 0.7), rgba(10, 36, 99, 0.7)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            color: var(--white);
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            color: var(--light-blue);
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .search-box {
+            background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .card {
+            background-color: var(--white);
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            color: var(--black);
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: var(--primary-blue);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 20px;
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+            position: relative;
+            padding-bottom: 15px;
+            color: var(--primary-blue);
+            text-align: center;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background-color: var(--accent-blue);
+            border-radius: 3px;
+        }
+
+        .trip-card {
+            text-align: center;
+            padding: 20px;
+            height: 100%;
+        }
+
+        .trip-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .trip-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-blue);
+        }
+
+        .trip-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            color: var(--gray);
+            justify-content: center;
+        }
+
+        .trip-info i {
+            margin-right: 10px;
+            width: 20px;
+            color: var(--accent-blue);
+        }
+
+        .review-card {
+            padding: 25px;
+            text-align: center;
+            height: 100%;
+        }
+
+        .review-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            color: var(--gray);
+        }
+
+        .review-author {
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        .review-rating {
+            color: #fbbf24;
+            margin-bottom: 10px;
+        }
+
+        .about-section {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: var(--white);
+            padding: 80px 0;
+        }
+
+        .contact-section {
+            padding: 80px 0;
+        }
+
+        .contact-form {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-label {
+            color: var(--black);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-control, .form-select {
+            background-color: var(--white);
+            border: 1px solid #e5e7eb;
+            color: var(--black);
+            padding: 12px 15px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--white);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+            color: var(--black);
+        }
+
+        footer {
+            background-color: var(--black);
+            padding: 60px 0 20px;
+            margin-top: 60px;
+            color: var(--white);
+        }
+
+        .footer-heading {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--accent-blue);
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: var(--light-gray);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-blue);
+            padding-left: 5px;
+        }
+
+        .copyright {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            margin-top: 30px;
+            text-align: center;
+            color: var(--light-gray);
+            font-size: 0.9rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--accent-blue);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--light-blue);
+        }
+
+        .auth-section {
+            padding: 80px 0;
+            background-color: var(--light-gray);
+        }
+
+        .auth-card {
+            padding: 30px;
+            max-width: 450px;
+            margin: 0 auto;
+        }
+
+        .auth-tabs {
+            margin-bottom: 25px;
+        }
+
+        .auth-tab {
+            padding: 12px 25px;
+            background: none;
+            border: none;
+            font-weight: 500;
+            color: var(--gray);
+            transition: all 0.3s ease;
+        }
+
+        .auth-tab.active {
+            color: var(--accent-blue);
+            border-bottom: 3px solid var(--accent-blue);
+        }
+
+        .review-form {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .card-body {
+                padding: 20px;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .hero-stats {
+                gap: 20px;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+            .user-welcome {
+                color: var(--primary-blue);
+                font-weight: 600;
+                margin-right: 15px;
+            }
+
+            .user-welcome i {
+                color: var(--accent-blue);
+                margin-right: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-light sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="#"><i class="fas fa-ship"></i> Boat Safari</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="index.html">Home</a>
+                </li>
+                <!-- Dynamic links based on user role will be added here -->
+            </ul>
+            <div class="d-flex align-items-center" id="navbarAuthSection">
+                <!-- This section will be dynamically updated based on login status -->
+                <a href="user-management.html" class="btn btn-primary">
+                    <i class="fas fa-users me-2"></i>Enter to your role
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">Experience the Ultimate Boat Safari Adventure</h1>
+            <p class="hero-subtitle">Discover breathtaking rivers, exotic wildlife, and unforgettable experiences with our premium boat safari trips. Book your adventure today!</p>
+
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Trip Destinations</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Satisfaction Rate</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">5★</div>
+                    <div class="stat-label">Rated Service</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Trips Section -->
+    <section id="trips" class="py-5">
+        <div class="container">
+            <h2 class="section-title">Featured Boat Safari Trips</h2>
+            <div class="row" id="trips-container">
+                <!-- Trips will be loaded dynamically here -->
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading trips...</span>
+                    </div>
+                    <p>Loading featured trips...</p>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <button class="btn btn-outline-primary" onclick="viewAllTrips()">View All Trips</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="container">
+            <h2 class="section-title text-white">About Boat Safari</h2>
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h3 class="mb-4">Your Premier Boat Safari Experience</h3>
+                    <p class="mb-4">Founded in 2010, Boat Safari has been providing unforgettable river exploration experiences to adventure seekers and nature lovers from around the world. Our mission is to connect people with nature through safe, educational, and thrilling boat safari adventures.</p>
+                    <p class="mb-4">We operate a fleet of modern, well-maintained boats and employ experienced guides who are passionate about wildlife and conservation. Our trips are designed to showcase the beauty of river ecosystems while promoting sustainable tourism practices.</p>
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-3">
+                            <div class="stat-number">13+</div>
+                            <div class="stat-label">Years Experience</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="stat-number">12</div>
+                            <div class="stat-label">Expert Guides</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="stat-number">8</div>
+                            <div class="stat-label">Modern Boats</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="mb-4">Why Choose Boat Safari?</h4>
+                            <div class="trip-info mb-3">
+                                <i class="fas fa-shield-alt text-success"></i>
+                                <span>Safety First - All our boats meet international safety standards</span>
+                            </div>
+                            <div class="trip-info mb-3">
+                                <i class="fas fa-graduation-cap text-info"></i>
+                                <span>Expert Guides - Certified naturalists and wildlife experts</span>
+                            </div>
+                            <div class="trip-info mb-3">
+                                <i class="fas fa-leaf text-success"></i>
+                                <span>Eco-Friendly - Committed to sustainable tourism practices</span>
+                            </div>
+                            <div class="trip-info mb-3">
+                                <i class="fas fa-camera text-primary"></i>
+                                <span>Photo Opportunities - Best spots for wildlife photography</span>
+                            </div>
+                            <div class="trip-info mb-3">
+                                <i class="fas fa-utensils text-warning"></i>
+                                <span>Refreshments Included - Complimentary snacks and drinks</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section id="reviews" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="section-title">Customer Reviews</h2>
+            <div class="row" id="reviews-container">
+                <!-- Reviews will be loaded dynamically here -->
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading reviews...</span>
+                    </div>
+                    <p>Loading reviews...</p>
+                </div>
+            </div>
+
+            <!-- Add Review Form -->
+            <div class="row mt-5">
+                <div class="col-lg-8 mx-auto">
+                    <div class="review-form">
+                        <h3 class="mb-4">Share Your Experience</h3>
+                        <form id="reviewForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="reviewName" class="form-label">Your Name</label>
+                                    <input type="text" class="form-control" id="reviewName" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="reviewTrip" class="form-label">Trip Taken</label>
+                                    <select class="form-select" id="reviewTrip" required>
+                                        <option selected disabled>Select a trip</option>
+                                        <!-- Trips will be loaded dynamically -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="reviewRating" class="form-label">Rating</label>
+                                <div>
+                                    <span class="rating-star" data-rating="1"><i class="far fa-star"></i></span>
+                                    <span class="rating-star" data-rating="2"><i class="far fa-star"></i></span>
+                                    <span class="rating-star" data-rating="3"><i class="far fa-star"></i></span>
+                                    <span class="rating-star" data-rating="4"><i class="far fa-star"></i></span>
+                                    <span class="rating-star" data-rating="5"><i class="far fa-star"></i></span>
+                                </div>
+                                <input type="hidden" id="reviewRating" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="reviewComment" class="form-label">Your Review</label>
+                                <textarea class="form-control" id="reviewComment" rows="4" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="section-title">Our Journey Gallery</h2>
+            <div class="row g-4" id="gallery-container">
+                <!-- Gallery items will be loaded dynamically here -->
+                <div class="col-12 text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading gallery...</span>
+                    </div>
+                    <p>Loading gallery...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h4 class="footer-heading">Boat Safari</h4>
+                    <p>Experience the thrill of river exploration with our premium boat safari trips. Discover wildlife, scenic views, and unforgettable adventures.</p>
+                    <div class="mt-3">
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h4 class="footer-heading">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#trips">Trips</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#reviews">Reviews</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h4 class="footer-heading">Trip Types</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Wildlife Safari</a></li>
+                        <li><a href="#">Sunset Cruise</a></li>
+                        <li><a href="#">Bird Watching</a></li>
+                        <li><a href="#">Fishing Trip</a></li>
+                        <li><a href="#">Private Charter</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <h4 class="footer-heading">Contact Info</h4>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt me-2"></i>123 Riverfront, City</li>
+                        <li><i class="fas fa-phone me-2"></i>+1 234 567 8900</li>
+                        <li><i class="fas fa-envelope me-2"></i>info@boatsafari.com</li>
+                        <li><i class="fas fa-clock me-2"></i>Mon - Sun: 8:00 AM - 8:00 PM</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 Boat Safari Trip Management System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Auth System -->
+<script src="auth.js"></script>
+
+<!-- Main Application Script -->
+<script>
+    // Base API URL
+    const API_BASE_URL = 'http://localhost:8080/api';
+
+    // Global variables
+    let allTrips = [];
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 Boat Safari Frontend Initializing...');
+
+        // The navbar will be automatically updated by auth.js
+        // Now load the rest of the page data
+        loadAllData();
+        setupEventListeners();
+        setupFormHandlers();
+    });
+
+    // Upload image to server
+    async function uploadImage(file, folder) {
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('folder', folder);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/upload`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                return result.filePath;
+            } else {
+                throw new Error(result.message || 'Upload failed');
+            }
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            throw new Error('Failed to upload image: ' + error.message);
+        }
+    }
+
+    // Load all data for the homepage
+    async function loadAllData() {
+        try {
+            console.log('📥 Loading data from backend...');
+            await loadHeroData();
+            await loadAboutData();
+            await loadFeaturedTrips();
+            await loadApprovedReviews();
+            await loadGalleryItems();
+            await loadAllTrips();
+            await loadTripsForReviewForm();
+
+            console.log('🎉 All data loaded successfully!');
+        } catch (error) {
+            console.error('❌ Error loading data:', error);
+            showError('Cannot connect to backend server. Please make sure Spring Boot is running on port 8080.');
+        }
+    }
+
+    // Load hero section data
+    async function loadHeroData() {
+        try {
+            console.log('🔍 Loading hero data from:', `${API_BASE_URL}/dashboard/hero-data`);
+
+            const response = await fetch(`${API_BASE_URL}/dashboard/hero-data`);
+            console.log('📡 Hero data response status:', response.status);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const heroData = await response.json();
+            console.log('🎯 Hero data loaded:', heroData);
+
+            // Update hero title and description
+            updateHeroContent(heroData);
+
+            // Update hero stats
+            updateHeroStats(heroData);
+
+        } catch (error) {
+            console.error('❌ Error loading hero data:', error);
+            console.warn('Using default hero content');
+        }
+    }
+
+    // Update hero title and description
+    function updateHeroContent(heroData) {
+        const heroTitle = document.querySelector('.hero-title');
+        const heroSubtitle = document.querySelector('.hero-subtitle');
+
+        console.log('Updating hero content:', {
+            title: heroData.title,
+            description: heroData.description,
+            heroTitleExists: !!heroTitle,
+            heroSubtitleExists: !!heroSubtitle
+        });
+
+        if (heroTitle && heroData.title) {
+            heroTitle.textContent = heroData.title;
+        }
+
+        if (heroSubtitle && heroData.description) {
+            heroSubtitle.textContent = heroData.description;
+        }
+    }
+
+    // Update hero stats
+    function updateHeroStats(heroData) {
+        const statElements = document.querySelectorAll('.stat-item');
+        console.log('Updating hero stats. Found stat elements:', statElements.length);
+
+        if (statElements.length >= 4) {
+            if (heroData.happyCustomers) {
+                statElements[0].querySelector('.stat-number').textContent = heroData.happyCustomers;
+            }
+            if (heroData.tripDestinations) {
+                statElements[1].querySelector('.stat-number').textContent = heroData.tripDestinations;
+            }
+            if (heroData.satisfactionRate) {
+                statElements[2].querySelector('.stat-number').textContent = heroData.satisfactionRate;
+            }
+            if (heroData.ratedService) {
+                statElements[3].querySelector('.stat-number').textContent = heroData.ratedService;
+            }
+        }
+    }
+
+    // Load featured trips
+    async function loadFeaturedTrips() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/trips/featured`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const trips = await response.json();
+            console.log(`✅ Loaded ${trips.length} featured trips`);
+            displayTrips(trips);
+
+        } catch (error) {
+            console.error('Error loading featured trips:', error);
+            throw error;
+        }
+    }
+
+    // Load approved reviews
+    async function loadApprovedReviews() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/reviews/approved`);
+            if (response.ok) {
+                const reviews = await response.json();
+                console.log(`✅ Loaded ${reviews.length} reviews`);
+                displayReviews(reviews);
+            }
+        } catch (error) {
+            console.error('Error loading reviews:', error);
+        }
+    }
+
+    // Load gallery items
+    async function loadGalleryItems() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/gallery/active`);
+            if (response.ok) {
+                const gallery = await response.json();
+                console.log(`✅ Loaded ${gallery.length} active gallery items`);
+                displayGallery(gallery);
+            }
+        } catch (error) {
+            console.error('Error loading gallery items:', error);
+        }
+    }
+
+    // Load all trips for search functionality
+    async function loadAllTrips() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/trips/active`);
+            if (response.ok) {
+                allTrips = await response.json();
+                console.log(`✅ Loaded ${allTrips.length} total trips for search`);
+                populateSearchDropdowns();
+            }
+        } catch (error) {
+            console.error('Error loading all trips:', error);
+        }
+    }
+
+    // Load about section data for homepage
+    async function loadAboutData() {
+        try {
+            console.log('🔍 Loading about data for homepage...');
+
+            const response = await fetch(`${API_BASE_URL}/about/section-data`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('🎯 About data loaded for homepage:', result);
+
+            if (result.success) {
+                const aboutData = result.data;
+                updateAboutContent(aboutData);
+                updateAboutStats(aboutData);
+                updateAboutFeatures(aboutData);
+            }
+
+        } catch (error) {
+            console.error('❌ Error loading about data for homepage:', error);
+        }
+    }
+
+    // Update about content on homepage
+    function updateAboutContent(aboutData) {
+        const aboutTitle = document.querySelector('.about-section .section-title');
+        const aboutSubtitle = document.querySelector('.about-section h3');
+        const aboutDesc1 = document.querySelector('.about-section p:nth-of-type(1)');
+        const aboutDesc2 = document.querySelector('.about-section p:nth-of-type(2)');
+
+        if (aboutTitle && aboutData.title) {
+            aboutTitle.textContent = aboutData.title;
+        }
+        if (aboutSubtitle && aboutData.subtitle) {
+            aboutSubtitle.textContent = aboutData.subtitle;
+        }
+        if (aboutDesc1 && aboutData.description1) {
+            aboutDesc1.textContent = aboutData.description1;
+        }
+        if (aboutDesc2 && aboutData.description2) {
+            aboutDesc2.textContent = aboutData.description2;
+        }
+    }
+
+    // Update about statistics on homepage
+    function updateAboutStats(aboutData) {
+        const statElements = document.querySelectorAll('.about-section .stat-number');
+        const statLabels = document.querySelectorAll('.about-section .stat-label');
+
+        if (aboutData.stats && statElements.length >= 3) {
+            const stats = aboutData.stats;
+
+            // Years Experience
+            if (stats.years_experience && statElements[0]) {
+                statElements[0].textContent = stats.years_experience.value;
+                if (statLabels[0]) {
+                    statLabels[0].textContent = stats.years_experience.label || "Years Experience";
+                }
+            }
+
+            // Expert Guides
+            if (stats.expert_guides && statElements[1]) {
+                statElements[1].textContent = stats.expert_guides.value;
+                if (statLabels[1]) {
+                    statLabels[1].textContent = stats.expert_guides.label || "Expert Guides";
+                }
+            }
+
+            // Modern Boats
+            if (stats.modern_boats && statElements[2]) {
+                statElements[2].textContent = stats.modern_boats.value;
+                if (statLabels[2]) {
+                    statLabels[2].textContent = stats.modern_boats.label || "Modern Boats";
+                }
+            }
+        }
+    }
+
+    // Update about features on homepage
+    function updateAboutFeatures(aboutData) {
+        const featuresContainer = document.querySelector('.about-section .card .card-body');
+
+        if (featuresContainer && aboutData.features && aboutData.features.length > 0) {
+            let featuresHTML = '<h4 class="mb-4">Why Choose Boat Safari?</h4>';
+
+            aboutData.features.forEach(feature => {
+                featuresHTML += `
+                    <div class="trip-info mb-3">
+                        <i class="${feature.icon} ${feature.color || 'text-primary'}"></i>
+                        <span>${feature.title} - ${feature.description}</span>
+                    </div>
+                `;
+            });
+
+            featuresContainer.innerHTML = featuresHTML;
+        }
+    }
+
+    // Load all trips for the review form dropdown
+    async function loadTripsForReviewForm() {
+        try {
+            console.log('🔄 Loading trips for review form...');
+            const response = await fetch(`${API_BASE_URL}/trips/active`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const trips = await response.json();
+            console.log(`✅ Loaded ${trips.length} trips for review form`);
+
+            populateTripDropdown(trips);
+
+        } catch (error) {
+            console.error('❌ Error loading trips for review form:', error);
+        }
+    }
+
+    // Display functions
+    function displayTrips(trips) {
+        const container = document.getElementById('trips-container');
+        if (!container) return;
+
+        if (trips && trips.length > 0) {
+            container.innerHTML = trips.map(trip => `
+                <div class="col-md-4 mb-4">
+                    <div class="card trip-card h-100">
+                        <div class="trip-image" style="background-image: url('${trip.imageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80'}')"></div>
+                        <div class="card-body d-flex flex-column">
+                            <h3 class="trip-name">${trip.name}</h3>
+                            <div class="trip-info">
+                                <i class="fas fa-clock"></i>
+                                <span>Duration: ${trip.duration} hours</span>
+                            </div>
+                            <div class="trip-info">
+                                <i class="fas fa-tag"></i>
+                                <span>Price: $${trip.pricePerPerson} per person</span>
+                            </div>
+                            <p class="mt-3 flex-grow-1">${trip.description || 'Experience the beauty of nature with our expert guides.'}</p>
+                            <button class="btn btn-primary mt-3" onclick="bookTrip(${trip.id})">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = `
+                <div class="col-12 text-center">
+                    <div class="alert alert-info">
+                        <h4>No Featured Trips Available</h4>
+                        <p>There are no featured trips in the database yet.</p>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    function displayReviews(reviews) {
+        const container = document.getElementById('reviews-container');
+        if (!container) return;
+
+        if (reviews && reviews.length > 0) {
+            container.innerHTML = reviews.map(review => `
+                <div class="col-md-4 mb-4">
+                    <div class="card review-card h-100">
+                        <div class="review-rating">
+                            ${generateStarRating(review.rating)}
+                        </div>
+                        <p class="review-text">"${review.comment}"</p>
+                        <div class="review-author">- ${review.customerName}</div>
+                        ${review.trip ? `<small class="text-muted">Trip: ${review.trip.name}</small>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = `
+                <div class="col-12 text-center">
+                    <p class="text-muted">No reviews available yet.</p>
+                </div>
+            `;
+        }
+    }
+
+    function displayGallery(galleryItems) {
+        const container = document.getElementById('gallery-container');
+        if (!container) return;
+
+        if (galleryItems && galleryItems.length > 0) {
+            container.innerHTML = galleryItems.map(item => `
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="${getFullImageUrl(item.imageUrl)}" class="card-img-top" alt="${item.title}" style="height: 250px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">${item.title}</h5>
+                            ${item.description ? `<p class="card-text">${item.description}</p>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = `
+                <div class="col-12 text-center">
+                    <p class="text-muted">No gallery items available.</p>
+                </div>
+            `;
+        }
+    }
+
+    // Helper functions
+    function getFullImageUrl(imageUrl) {
+        if (!imageUrl) return 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80';
+        if (imageUrl.startsWith('http')) return imageUrl;
+        if (imageUrl.startsWith('/')) return `http://localhost:8080${imageUrl}`;
+        return `http://localhost:8080/external-uploads/gallery/${imageUrl}`;
+    }
+
+    function generateStarRating(rating) {
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            stars += i <= rating ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
+        }
+        return stars;
+    }
+
+    function populateTripDropdown(trips) {
+        const tripSelect = document.getElementById('reviewTrip');
+        if (!tripSelect) return;
+
+        while (tripSelect.options.length > 1) {
+            tripSelect.remove(1);
+        }
+
+        if (trips && trips.length > 0) {
+            trips.forEach(trip => {
+                const option = document.createElement('option');
+                option.value = trip.name;
+                option.textContent = trip.name;
+                tripSelect.appendChild(option);
+            });
+        }
+    }
+
+    function populateSearchDropdowns() {
+        const destinationSelect = document.getElementById('destination');
+        const tripTypeSelect = document.getElementById('tripType');
+
+        if (!destinationSelect || !tripTypeSelect) return;
+
+        const destinations = [...new Set(allTrips.map(trip => trip.destination))];
+        const types = [...new Set(allTrips.map(trip => trip.type))];
+
+        destinations.forEach(destination => {
+            const option = document.createElement('option');
+            option.value = destination;
+            option.textContent = destination;
+            destinationSelect.appendChild(option);
+        });
+
+        types.forEach(type => {
+            const option = document.createElement('option');
+            option.value = type;
+            option.textContent = type;
+            tripTypeSelect.appendChild(option);
+        });
+    }
+
+    // Form handlers
+    function setupFormHandlers() {
+        // Rating stars
+        const ratingStars = document.querySelectorAll('.rating-star');
+        const ratingInput = document.getElementById('reviewRating');
+
+        ratingStars.forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = this.getAttribute('data-rating');
+                ratingInput.value = rating;
+
+                ratingStars.forEach(s => {
+                    if (s.getAttribute('data-rating') <= rating) {
+                        s.innerHTML = '<i class="fas fa-star"></i>';
+                    } else {
+                        s.innerHTML = '<i class="far fa-star"></i>';
+                    }
+                });
+            });
+        });
+
+        // Review form
+        const reviewForm = document.getElementById('reviewForm');
+        if (reviewForm) {
+            reviewForm.addEventListener('submit', submitReview);
+        }
+    }
+
+    async function submitReview(event) {
+        event.preventDefault();
+
+        const name = document.getElementById('reviewName').value;
+        const tripName = document.getElementById('reviewTrip').value;
+        const rating = document.getElementById('reviewRating').value;
+        const comment = document.getElementById('reviewComment').value;
+
+        if (!name || !tripName || !rating || !comment) {
+            alert('❌ Please fill in all fields.');
+            return;
+        }
+
+        try {
+            const reviewData = {
+                customerName: name,
+                tripName: tripName,
+                rating: parseInt(rating),
+                comment: comment
+            };
+
+            const response = await fetch(`${API_BASE_URL}/new-reviews`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(reviewData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                alert('✅ ' + result.message);
+                document.getElementById('reviewForm').reset();
+                document.querySelectorAll('.rating-star').forEach(star => {
+                    star.innerHTML = '<i class="far fa-star"></i>';
+                });
+                document.getElementById('reviewRating').value = '';
+            } else {
+                alert('❌ ' + (result.message || 'Error submitting review. Please try again.'));
+            }
+        } catch (error) {
+            console.error('❌ Error submitting review:', error);
+            alert('❌ Error submitting review. Please try again.');
+        }
+    }
+
+    // Event listeners
+    function setupEventListeners() {
+        const searchButton = document.querySelector('.search-box .btn');
+        if (searchButton) {
+            searchButton.addEventListener('click', searchTrips);
+        }
+
+        const viewAllButton = document.querySelector('button[onclick="viewAllTrips()"]');
+        if (viewAllButton) {
+            viewAllButton.addEventListener('click', viewAllTrips);
+        }
+    }
+
+    // Action functions
+    async function searchTrips() {
+        const destination = document.getElementById('destination').value;
+        const tripType = document.getElementById('tripType').value;
+        const date = document.getElementById('date').value;
+
+        try {
+            let url = `${API_BASE_URL}/trips/active`;
+            const params = [];
+
+            if (destination && destination !== 'All Destinations') {
+                params.push(`destination=${encodeURIComponent(destination)}`);
+            }
+            if (tripType && tripType !== 'All Trips') {
+                params.push(`type=${encodeURIComponent(tripType)}`);
+            }
+
+            if (params.length > 0) {
+                url += '?' + params.join('&');
+            }
+
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const trips = await response.json();
+
+            if (trips.length > 0) {
+                displayTrips(trips);
+                document.getElementById('trips').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert('No trips found matching your criteria.');
+            }
+        } catch (error) {
+            console.error('Error searching trips:', error);
+            alert('Error searching for trips. Please try again.');
+        }
+    }
+
+    function bookTrip(tripId) {
+        const trip = allTrips.find(t => t.id === tripId);
+        if (trip) {
+            alert(`Booking: ${trip.name}\nPrice: $${trip.pricePerPerson} per person\n\nThis would redirect to the booking page.`);
+        }
+    }
+
+    function viewAllTrips() {
+        fetch(`${API_BASE_URL}/trips/active`)
+            .then(response => response.json())
+            .then(trips => {
+                displayTrips(trips);
+                document.getElementById('trips').scrollIntoView({ behavior: 'smooth' });
+            })
+            .catch(error => {
+                console.error('Error loading all trips:', error);
+                alert('Error loading trips. Please try again.');
+            });
+    }
+
+    function showError(message) {
+        const tripsContainer = document.getElementById('trips-container');
+        if (tripsContainer) {
+            tripsContainer.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-danger">
+                        <h4>❌ Connection Error</h4>
+                        <p>${message}</p>
+                        <button class="btn btn-primary mt-2" onclick="loadAllData()">Retry Connection</button>
+                    </div>
+                </div>
+            `;
+        }
+    }
+</script>
+
+<!-- Auth System -->
+<script src="auth.js"></script>
+
+
+</body>
+</html>

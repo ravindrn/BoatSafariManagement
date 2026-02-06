@@ -1,0 +1,2095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boat Safari - Operations Manager Reports</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #0a2463;
+            --secondary-blue: #1e3a8a;
+            --accent-blue: #3b82f6;
+            --light-blue: #dbeafe;
+            --white: #ffffff;
+            --black: #1f2937;
+            --gray: #6b7280;
+            --light-gray: #f3f4f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--black);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: var(--white);
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--primary-blue) !important;
+        }
+
+        .navbar-brand i {
+            color: var(--accent-blue);
+            margin-right: 8px;
+        }
+
+        .nav-link {
+            color: var(--black) !important;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-blue) !important;
+        }
+
+        .nav-link.active {
+            color: var(--accent-blue) !important;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-blue);
+            border: none;
+            padding: 10px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .user-welcome {
+            color: var(--primary-blue);
+            font-weight: 600;
+            margin-right: 15px;
+        }
+
+        .user-welcome i {
+            color: var(--accent-blue);
+            margin-right: 5px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+            color: var(--primary-blue);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background-color: var(--accent-blue);
+            border-radius: 3px;
+        }
+
+        .card {
+            background-color: var(--white);
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            color: var(--black);
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background-color: var(--primary-blue);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 20px;
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        /* Stats cards */
+        .stats-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .stats-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .stats-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stats-card .label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .stats-card.primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--secondary-blue));
+        }
+
+        .stats-card.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .stats-card.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .stats-card.info {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+        }
+
+        .stats-card.danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        /* Chart containers */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        /* Table styles */
+        .table th {
+            background-color: var(--light-blue);
+            color: var(--primary-blue);
+            font-weight: 600;
+            border: none;
+        }
+
+        .table td {
+            border-color: #e5e7eb;
+            vertical-align: middle;
+        }
+
+        .action-buttons .btn {
+            margin-right: 5px;
+            padding: 5px 10px;
+            font-size: 0.85rem;
+        }
+
+        /* Modal styles */
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+        }
+
+        .modal-header {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            border-radius: 15px 15px 0 0;
+            border: none;
+        }
+
+        .modal-footer {
+            border: none;
+            padding: 20px;
+        }
+
+        /* Filter section */
+        .filter-section {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        footer {
+            background-color: var(--black);
+            padding: 40px 0 20px;
+            margin-top: 60px;
+            color: var(--white);
+        }
+
+        .footer-heading {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--accent-blue);
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: var(--light-gray);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-blue);
+            padding-left: 5px;
+        }
+
+        .copyright {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            margin-top: 30px;
+            text-align: center;
+            color: var(--light-gray);
+            font-size: 0.9rem;
+        }
+
+        /* Status badges */
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: #d97706;
+        }
+
+        .status-confirmed {
+            background-color: rgba(34, 197, 94, 0.2);
+            color: #16a34a;
+        }
+
+        .status-completed {
+            background-color: rgba(107, 114, 128, 0.2);
+            color: #6b7280;
+        }
+
+        .status-cancelled {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #dc2626;
+        }
+
+        /* Report type cards */
+        .report-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .card-body {
+                padding: 20px;
+            }
+        }
+
+        /* Trip Management Styles */
+        .status-active {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status-inactive {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+
+        .no-data i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--light-gray);
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-light sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="#"><i class="fas fa-ship"></i> Boat Safari</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="reports.html">Reports & Analytics</a>
+                </li>
+                <!-- Show Admin Dashboard link only for SYSTEM_ADMINISTRATOR -->
+                <li class="nav-item" id="adminDashboardLink" style="display: none;">
+                    <a class="nav-link" href="admin.html">Admin Dashboard</a>
+                </li>
+                <!-- Show User Management link for SYSTEM_ADMINISTRATOR and USER_MANAGER -->
+                <li class="nav-item" id="userManagementLink" style="display: none;">
+                    <a class="nav-link" href="adminUserManagement.html">User Management</a>
+                </li>
+                <!-- Show Schedule Management link for SYSTEM_ADMINISTRATOR and STAFF -->
+                <li class="nav-item" id="scheduleManagementLink" style="display: none;">
+                    <a class="nav-link" href="schedule.html">Schedule Management</a>
+                </li>
+            </ul>
+            <div class="d-flex align-items-center">
+                <span class="user-welcome">
+                    <i class="fas fa-user-circle me-2"></i>
+                    <span id="userName">Operations Manager</span>
+                    <small class="ms-2 badge bg-secondary" id="userRoleBadge"></small>
+                </span>
+                <a href="user-management.html" class="btn btn-outline-primary ms-3" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container mt-4">
+    <h1 class="section-title">Reports & Analytics Dashboard</h1>
+
+    <!-- Quick Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stats-card primary">
+                <i class="fas fa-dollar-sign"></i>
+                <div class="number" id="totalRevenue">$0.00</div>
+                <div class="label">Total Revenue</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card success">
+                <i class="fas fa-chart-line"></i>
+                <div class="number" id="companyRevenue">$0.00</div>
+                <div class="label">Company Revenue</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card info">
+                <i class="fas fa-users"></i>
+                <div class="number" id="totalBookings">0</div>
+                <div class="label">Total Bookings</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card warning">
+                <i class="fas fa-ship"></i>
+                <div class="number" id="activeTrips">0</div>
+                <div class="label">Active Trips</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Date Range Filter -->
+    <div class="filter-section">
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <label for="startDate" class="form-label">Start Date</label>
+                <input type="date" class="form-control" id="startDate">
+            </div>
+            <div class="col-md-3 mb-3">
+                <label for="endDate" class="form-label">End Date</label>
+                <input type="date" class="form-control" id="endDate">
+            </div>
+            <div class="col-md-3 mb-3">
+                <label for="reportType" class="form-label">Report Type</label>
+                <select class="form-select" id="reportType">
+                    <option value="revenue">Revenue Report</option>
+                    <option value="bookings">Booking Statistics</option>
+                    <option value="trips">Trip Performance</option>
+                    <option value="boats">Boat Utilization</option>
+                    <option value="customers">Customer Analysis</option>
+                </select>
+            </div>
+            <div class="col-md-3 mb-3 d-flex align-items-end">
+                <button class="btn btn-primary w-100" id="generateReport">
+                    <i class="fas fa-chart-bar me-2"></i>Generate Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Types -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h3 class="mb-3">Quick Reports</h3>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card report-card" data-report-type="revenue">
+                <div class="card-body text-center">
+                    <i class="fas fa-money-bill-wave fa-3x text-primary mb-3"></i>
+                    <h5>Revenue Report</h5>
+                    <p class="text-muted">Total revenue, company earnings, and owner payouts</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card report-card" data-report-type="bookings">
+                <div class="card-body text-center">
+                    <i class="fas fa-calendar-check fa-3x text-success mb-3"></i>
+                    <h5>Booking Analysis</h5>
+                    <p class="text-muted">Booking trends, status distribution, and customer insights</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card report-card" data-report-type="trips">
+                <div class="card-body text-center">
+                    <i class="fas fa-route fa-3x text-info mb-3"></i>
+                    <h5>Trip Performance</h5>
+                    <p class="text-muted">Trip popularity, capacity utilization, and performance metrics</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revenue Charts -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-chart-pie me-2"></i>Revenue Distribution
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="revenueDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-chart-line me-2"></i>Revenue Trend (Last 30 Days)
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="revenueTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-chart-bar me-2"></i>Booking Status Distribution
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="bookingStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-calendar-alt me-2"></i>Monthly Bookings
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="monthlyBookingsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Reports Table -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-table me-2"></i>Detailed Report Data
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-sm btn-success" id="exportCSV">
+                    <i class="fas fa-file-csv me-2"></i>Export CSV
+                </button>
+                <button type="button" class="btn btn-sm btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                    <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" id="exportRevenuePDF">
+                        <i class="fas fa-file-pdf me-2"></i>Revenue Report PDF
+                    </a></li>
+                    <li><a class="dropdown-item" href="#" id="exportPerformancePDF">
+                        <i class="fas fa-chart-line me-2"></i>Trip Performance PDF
+                    </a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" id="exportAllPDF">
+                        <i class="fas fa-file-archive me-2"></i>Complete Report Package
+                    </a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="reportDataTable">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Trip</th>
+                        <th>Status</th>
+                        <th>Revenue</th>
+                        <th>Tax</th>
+                        <th>Commission</th>
+                        <th>Owner Payout</th>
+                        <th>Company Revenue</th>
+                    </tr>
+                    </thead>
+                    <tbody id="reportDataTableBody">
+                    <!-- Report data will be populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trip Performance -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-trophy me-2"></i>Trip Performance Ranking
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover" id="tripPerformanceTable">
+                    <thead>
+                    <tr>
+                        <th>Trip Name</th>
+                        <th>Type</th>
+                        <th>Total Bookings</th>
+                        <th>Revenue</th>
+                        <th>Avg. Rating</th>
+                        <th>Capacity Utilization</th>
+                        <th>Performance</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tripPerformanceTableBody">
+                    <!-- Trip performance data will be populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trip Management Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3 class="mb-0"><i class="fas fa-ship me-2"></i>Trip Management</h3>
+        </div>
+        <div class="card-body">
+            <!-- Alert Container -->
+            <div id="tripAlertContainer"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4>Manage Trips</h4>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tripModal" onclick="openTripModal()">
+                    <i class="fas fa-plus me-2"></i>Add New Trip
+                </button>
+            </div>
+
+            <div class="search-box">
+                <input type="text" class="form-control" id="tripSearch" placeholder="Search trips...">
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Destination</th>
+                        <th>Type</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Featured</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tripsTableBody">
+                    <!-- Trips will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="tripsNoData" class="no-data" style="display: none;">
+                <i class="fas fa-ship"></i>
+                <h4>No Trips Found</h4>
+                <p>Add your first trip to get started.</p>
+            </div>
+
+            <nav aria-label="Trips pagination">
+                <ul class="pagination justify-content-center" id="tripsPagination">
+                    <!-- Pagination will be generated here -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <h4 class="footer-heading">Boat Safari</h4>
+                <p>Operations Manager portal for comprehensive reporting and analytics.</p>
+                <div class="mt-3">
+                    <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-white"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="col-md-2 mb-4">
+                <h4 class="footer-heading">Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="reports.html">Reports</a></li>
+                    <li><a href="schedule.html">Schedule</a></li>
+                    <li><a href="boats.html">Boats</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-4">
+                <h4 class="footer-heading">Management</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Revenue Analysis</a></li>
+                    <li><a href="#">Performance Reports</a></li>
+                    <li><a href="#">Customer Insights</a></li>
+                    <li><a href="#">Business Intelligence</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-4">
+                <h4 class="footer-heading">Contact Info</h4>
+                <ul class="footer-links">
+                    <li><i class="fas fa-map-marker-alt me-2"></i>123 Riverfront, City</li>
+                    <li><i class="fas fa-phone me-2"></i>+1 234 567 8900</li>
+                    <li><i class="fas fa-envelope me-2"></i>manager@boatsafari.com</li>
+                    <li><i class="fas fa-clock me-2"></i>Mon - Sun: 8:00 AM - 8:00 PM</li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2023 Boat Safari Trip Management System. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Trip Modal -->
+<div class="modal fade" id="tripModal" tabindex="-1" aria-labelledby="tripModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tripModalLabel">Add New Trip</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="tripForm">
+                    <input type="hidden" id="tripId">
+                    <input type="hidden" id="tripCapacity" value="20">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="tripName" class="form-label">Trip Name</label>
+                                <input type="text" class="form-control" id="tripName" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="tripDestination" class="form-label">Destination</label>
+                                <input type="text" class="form-control" id="tripDestination" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="tripType" class="form-label">Trip Type</label>
+                                <input type="text" class="form-control" id="tripType" required
+                                       placeholder="e.g., Wildlife Safari, Sunset Cruise, Fishing Trip">
+                                <small class="form-text text-muted">Enter the type of trip (custom text)</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="tripDuration" class="form-label">Duration (hours)</label>
+                                <input type="number" class="form-control" id="tripDuration" min="1" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="tripPrice" class="form-label">Price per Person (Rs.)</label>
+                                <input type="number" class="form-control" id="tripPrice" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="tripDescription" class="form-label">Description</label>
+                        <textarea class="form-control form-textarea" id="tripDescription" rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="tripImage" class="form-label">Trip Image</label>
+                        <input type="file" class="form-control" id="tripImage" accept="image/*">
+                        <small class="form-text text-muted">Select an image from your device (JPG, PNG, etc.)</small>
+                        <div id="tripImagePreview" class="mt-2" style="display: none;">
+                            <img id="tripPreviewImg" src="#" alt="Preview" style="max-width: 200px; max-height: 150px; border-radius: 5px;">
+                        </div>
+                        <input type="hidden" id="tripExistingImage">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input" id="tripActive" checked>
+                                <label class="form-check-label" for="tripActive">Active</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input" id="tripFeatured">
+                                <label class="form-check-label" for="tripFeatured">Featured</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveTripBtn">Save Trip</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Auth System -->
+<script src="auth.js"></script>
+<script>
+    // API Base URL
+    const API_BASE = 'http://localhost:8080/api';
+    const API_BASE_URL = 'http://localhost:8080/api';
+    let revenueDistributionChart, revenueTrendChart, bookingStatusChart, monthlyBookingsChart;
+
+    // Trip Management Variables
+    let allTrips = [];
+    let currentTripPage = 1;
+    const itemsPerPage = 10;
+
+    // Utility function to check if user is operations manager OR admin
+    function isOperationsManagerOrAdmin() {
+        const userRole = localStorage.getItem('currentUserRole');
+        console.log('🔐 Checking reports access for role:', userRole);
+        return userRole === 'OPERATIONS_MANAGER' || userRole === 'SYSTEM_ADMINISTRATOR';
+    }
+
+    function isLoggedIn() {
+        return localStorage.getItem('currentUserToken') !== null;
+    }
+
+    function getUserDisplayName() {
+        const userFirstName = localStorage.getItem('currentUserFirstName');
+        const userName = localStorage.getItem('currentUserName');
+        return userFirstName || userName || 'User';
+    }
+
+    // Setup navigation based on user role
+    function setupNavigationBasedOnRole() {
+        const userRole = localStorage.getItem('currentUserRole');
+        console.log('🔄 Setting up navigation for role:', userRole);
+
+        const adminDashboardLink = document.getElementById('adminDashboardLink');
+        const userManagementLink = document.getElementById('userManagementLink');
+        const scheduleManagementLink = document.getElementById('scheduleManagementLink');
+        const userRoleBadge = document.getElementById('userRoleBadge');
+
+        // Set role badge
+        if (userRoleBadge) {
+            userRoleBadge.textContent = getRoleDisplayName(userRole);
+            console.log('🏷️ Setting role badge to:', getRoleDisplayName(userRole));
+
+            // Set badge color based on role
+            switch(userRole) {
+                case 'SYSTEM_ADMINISTRATOR':
+                    userRoleBadge.className = 'ms-2 badge bg-danger';
+                    break;
+                case 'OPERATIONS_MANAGER':
+                    userRoleBadge.className = 'ms-2 badge bg-warning';
+                    break;
+                case 'USER_MANAGER':
+                    userRoleBadge.className = 'ms-2 badge bg-primary';
+                    break;
+                case 'STAFF':
+                    userRoleBadge.className = 'ms-2 badge bg-info';
+                    break;
+                default:
+                    userRoleBadge.className = 'ms-2 badge bg-secondary';
+            }
+        }
+
+        // Show/hide navigation items based on role
+        if (adminDashboardLink) {
+            const showAdminDashboard = userRole === 'SYSTEM_ADMINISTRATOR';
+            adminDashboardLink.style.display = showAdminDashboard ? 'block' : 'none';
+            console.log('📊 Admin Dashboard link visible:', showAdminDashboard);
+        }
+
+        if (userManagementLink) {
+            const showUserManagement = userRole === 'SYSTEM_ADMINISTRATOR' || userRole === 'USER_MANAGER';
+            userManagementLink.style.display = showUserManagement ? 'block' : 'none';
+            console.log('👥 User Management link visible:', showUserManagement);
+        }
+
+        if (scheduleManagementLink) {
+            const showScheduleManagement = userRole === 'SYSTEM_ADMINISTRATOR' || userRole === 'STAFF';
+            scheduleManagementLink.style.display = showScheduleManagement ? 'block' : 'none';
+            console.log('📅 Schedule Management link visible:', showScheduleManagement);
+        }
+    }
+
+    // Helper function to get role display name
+    function getRoleDisplayName(role) {
+        switch(role) {
+            case 'SYSTEM_ADMINISTRATOR': return 'Administrator';
+            case 'OPERATIONS_MANAGER': return 'Operations Manager';
+            case 'STAFF': return 'Staff';
+            case 'USER_MANAGER': return 'User Manager';
+            case 'BOAT_OWNER': return 'Boat Owner';
+            case 'CUSTOMER': return 'Customer';
+            default: return role;
+        }
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Operations Manager Reports page loaded, initializing...');
+
+        // Check if user is logged in
+        if (!isLoggedIn()) {
+            window.location.href = 'user-management.html';
+            return;
+        }
+
+        // UPDATED: Check for both OPERATIONS_MANAGER and SYSTEM_ADMINISTRATOR roles
+        if (!isOperationsManagerOrAdmin()) {
+            alert('Access denied. Operations Manager or Admin privileges required.');
+
+            // Redirect based on user role
+            const userRole = localStorage.getItem('currentUserRole');
+            switch(userRole) {
+                case 'BOAT_OWNER':
+                    window.location.href = 'boats.html';
+                    break;
+                case 'STAFF':
+                    window.location.href = 'schedule.html';
+                    break;
+                case 'USER_MANAGER':
+                    window.location.href = 'adminUserManagement.html';
+                    break;
+                case 'CUSTOMER':
+                default:
+                    window.location.href = 'booking.html';
+                    break;
+            }
+            return;
+        }
+
+        // Set user display name and setup navigation
+        const displayName = getUserDisplayName();
+        document.getElementById('userName').textContent = displayName;
+        setupNavigationBasedOnRole();
+
+        // Set default date range (last 30 days)
+        setDefaultDateRange();
+
+        // Load initial statistics
+        loadDashboardStats();
+        loadRevenueDistribution();
+        loadRevenueTrend();
+        loadBookingStatus();
+        loadMonthlyBookings();
+        loadReportData();
+        loadTripPerformance();
+
+        // Initialize trip management
+        initializeTripManagement();
+
+        // Setup event listeners
+        setupEventListeners();
+
+        console.log('Operations Manager Reports page initialization complete');
+    });
+
+    // Trip Management Functions
+    function initializeTripManagement() {
+        console.log('🚢 Initializing Trip Management...');
+        setupTripEventListeners();
+        loadTrips();
+    }
+
+    function setupTripEventListeners() {
+        // Save trip button
+        document.getElementById('saveTripBtn').addEventListener('click', saveTrip);
+
+        // Trip search
+        document.getElementById('tripSearch').addEventListener('input', function() {
+            currentTripPage = 1;
+            displayTrips(currentTripPage);
+        });
+
+        // Image preview
+        document.getElementById('tripImage').addEventListener('change', function() {
+            previewTripImage(this);
+        });
+
+        // Trip form submit
+        document.getElementById('tripForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveTrip();
+        });
+    }
+
+    function previewTripImage(input) {
+        const preview = document.getElementById('tripImagePreview');
+        const previewImg = document.getElementById('tripPreviewImg');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            preview.style.display = 'none';
+        }
+    }
+
+    // Load trips data
+    async function loadTrips() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/trips`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            allTrips = await response.json();
+            console.log(`✅ Loaded ${allTrips.length} trips`);
+            displayTrips(currentTripPage);
+        } catch (error) {
+            console.error('Error loading trips:', error);
+            showTripAlert('Cannot connect to backend server. Please make sure Spring Boot is running on port 8080.', 'danger');
+        }
+    }
+
+    // Display trips in the table
+    function displayTrips(page) {
+        const tableBody = document.getElementById('tripsTableBody');
+        const noDataDiv = document.getElementById('tripsNoData');
+        const pagination = document.getElementById('tripsPagination');
+
+        if (!allTrips || allTrips.length === 0) {
+            tableBody.innerHTML = '';
+            noDataDiv.style.display = 'block';
+            pagination.innerHTML = '';
+            return;
+        }
+
+        noDataDiv.style.display = 'none';
+
+        // Apply search filter if any
+        const searchTerm = document.getElementById('tripSearch').value.toLowerCase();
+        let filteredTrips = allTrips;
+
+        if (searchTerm) {
+            filteredTrips = allTrips.filter(trip =>
+                trip.name.toLowerCase().includes(searchTerm) ||
+                trip.destination.toLowerCase().includes(searchTerm) ||
+                trip.type.toLowerCase().includes(searchTerm)
+            );
+        }
+
+        // Calculate pagination
+        const totalPages = Math.ceil(filteredTrips.length / itemsPerPage);
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, filteredTrips.length);
+        const pageTrips = filteredTrips.slice(startIndex, endIndex);
+
+        // Generate table rows
+        tableBody.innerHTML = pageTrips.map(trip => `
+            <tr>
+                <td>${trip.name}</td>
+                <td>${trip.destination}</td>
+                <td>${trip.type}</td>
+                <td>Rs. ${trip.pricePerPerson}</td>
+                <td>
+                    <span class="status-badge ${trip.active ? 'status-active' : 'status-inactive'}">
+                        ${trip.active ? 'ACTIVE' : 'INACTIVE'}
+                    </span>
+                </td>
+                <td>
+                    <span class="status-badge ${trip.featured ? 'status-active' : 'status-pending'}">
+                        ${trip.featured ? 'FEATURED' : 'REGULAR'}
+                    </span>
+                </td>
+                <td class="action-buttons">
+                    <button class="btn btn-sm btn-warning action-btn" onclick="editTrip(${trip.id})">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-sm btn-danger action-btn" onclick="deleteTrip(${trip.id})">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                    <button class="btn btn-sm ${trip.featured ? 'btn-secondary' : 'btn-info'} action-btn"
+                            onclick="toggleFeatured(${trip.id}, ${trip.featured})">
+                        <i class="fas ${trip.featured ? 'fa-star' : 'fa-star-half-alt'}"></i>
+                        ${trip.featured ? 'Unfeature' : 'Feature'}
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+
+        // Generate pagination
+        generateTripPagination(pagination, page, totalPages);
+    }
+
+    function generateTripPagination(container, currentPage, totalPages) {
+        if (totalPages <= 1) {
+            container.innerHTML = '';
+            return;
+        }
+
+        let paginationHTML = '';
+
+        // Previous button
+        if (currentPage > 1) {
+            paginationHTML += `
+                <li class="page-item">
+                    <a class="page-link" href="#" onclick="changeTripPage(${currentPage - 1})">Previous</a>
+                </li>
+            `;
+        }
+
+        // Page numbers
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === currentPage) {
+                paginationHTML += `
+                    <li class="page-item active">
+                        <a class="page-link" href="#">${i}</a>
+                    </li>
+                `;
+            } else {
+                paginationHTML += `
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="changeTripPage(${i})">${i}</a>
+                    </li>
+                `;
+            }
+        }
+
+        // Next button
+        if (currentPage < totalPages) {
+            paginationHTML += `
+                <li class="page-item">
+                    <a class="page-link" href="#" onclick="changeTripPage(${currentPage + 1})">Next</a>
+                </li>
+            `;
+        }
+
+        container.innerHTML = paginationHTML;
+    }
+
+    function changeTripPage(page) {
+        currentTripPage = page;
+        displayTrips(page);
+    }
+
+    // Open trip modal for adding new trip
+    function openTripModal() {
+        document.getElementById('tripModalLabel').textContent = 'Add New Trip';
+        document.getElementById('tripForm').reset();
+        document.getElementById('tripId').value = '';
+        document.getElementById('tripActive').checked = true;
+        document.getElementById('tripFeatured').checked = false;
+        document.getElementById('tripImagePreview').style.display = 'none';
+        document.getElementById('tripExistingImage').value = '';
+        document.getElementById('tripImage').required = true;
+
+        // Clear the trip type input specifically
+        document.getElementById('tripType').value = '';
+    }
+
+    // Edit trip
+    async function editTrip(tripId) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/trips/${tripId}`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const trip = await response.json();
+
+            // Populate form with trip data
+            document.getElementById('tripModalLabel').textContent = 'Edit Trip';
+            document.getElementById('tripId').value = trip.id;
+            document.getElementById('tripName').value = trip.name;
+            document.getElementById('tripDestination').value = trip.destination;
+            document.getElementById('tripType').value = trip.type;
+            document.getElementById('tripDuration').value = trip.duration;
+            document.getElementById('tripPrice').value = trip.pricePerPerson;
+            document.getElementById('tripDescription').value = trip.description || '';
+            document.getElementById('tripActive').checked = trip.active !== false;
+            document.getElementById('tripFeatured').checked = trip.featured === true;
+
+            // Handle existing image
+            if (trip.imageUrl) {
+                document.getElementById('tripExistingImage').value = trip.imageUrl;
+                document.getElementById('tripPreviewImg').src = trip.imageUrl;
+                document.getElementById('tripImagePreview').style.display = 'block';
+            } else {
+                document.getElementById('tripExistingImage').value = '';
+                document.getElementById('tripImagePreview').style.display = 'none';
+            }
+
+            // Clear file input
+            document.getElementById('tripImage').value = '';
+            document.getElementById('tripImage').required = false;
+
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('tripModal'));
+            modal.show();
+
+        } catch (error) {
+            console.error('Error loading trip for edit:', error);
+            showTripAlert('Error loading trip data. Please try again.', 'danger');
+        }
+    }
+
+    // Save trip (create or update)
+    async function saveTrip() {
+        const tripId = document.getElementById('tripId').value;
+        const isEdit = !!tripId;
+
+        const tripData = {
+            name: document.getElementById('tripName').value,
+            destination: document.getElementById('tripDestination').value,
+            type: document.getElementById('tripType').value, // This will now be free text
+            duration: parseInt(document.getElementById('tripDuration').value),
+            capacity: parseInt(document.getElementById('tripCapacity').value),
+            pricePerPerson: parseFloat(document.getElementById('tripPrice').value),
+            description: document.getElementById('tripDescription').value,
+            active: document.getElementById('tripActive').checked,
+            featured: document.getElementById('tripFeatured').checked
+        };
+
+        // Handle image upload
+        const imageFile = document.getElementById('tripImage').files[0];
+        const existingImage = document.getElementById('tripExistingImage').value;
+
+        try {
+            let imagePath = existingImage; // Keep existing image if no new file
+
+            if (imageFile) {
+                // Upload new image
+                imagePath = await uploadTripImage(imageFile, 'trips');
+            }
+
+            // Add image path to trip data
+            tripData.imageUrl = imagePath;
+
+            const url = isEdit ? `${API_BASE_URL}/trips/${tripId}` : `${API_BASE_URL}/trips`;
+            const method = isEdit ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(tripData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                showTripAlert(`Trip ${isEdit ? 'updated' : 'created'} successfully!`, 'success');
+
+                // Close modal and reload data
+                const modal = bootstrap.Modal.getInstance(document.getElementById('tripModal'));
+                modal.hide();
+
+                await loadTrips();
+            } else {
+                throw new Error(result.message || 'Unknown error');
+            }
+        } catch (error) {
+            console.error('Error saving trip:', error);
+            showTripAlert(`Error ${isEdit ? 'updating' : 'creating'} trip: ${error.message}`, 'danger');
+        }
+    }
+
+    // Upload image to server
+    async function uploadTripImage(file, folder) {
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('folder', folder);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/upload`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error(`Upload failed: ${response.status}`);
+            }
+
+            const result = await response.json();
+            return result.filePath;
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            throw new Error('Failed to upload image');
+        }
+    }
+
+    // Delete trip
+    async function deleteTrip(tripId) {
+        if (!confirm('Are you sure you want to delete this trip? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/trips/${tripId}`, {
+                method: 'DELETE'
+            });
+
+            // Check if response is OK first
+            if (response.ok) {
+                // Check if response has content before trying to parse JSON
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    const result = await response.json();
+                    if (result.success) {
+                        showTripAlert('Trip deleted successfully!', 'success');
+                        await loadTrips(); // Refresh the list immediately
+                    } else {
+                        throw new Error(result.message || 'Unknown error');
+                    }
+                } else {
+                    // No JSON response, but request was successful
+                    showTripAlert('Trip deleted successfully!', 'success');
+                    await loadTrips(); // Refresh the list immediately
+                }
+            } else {
+                // Handle non-OK responses
+                const errorText = await response.text();
+                throw new Error(errorText || `HTTP error! status: ${response.status}`);
+            }
+        } catch (error) {
+            console.error('Error deleting trip:', error);
+            showTripAlert(`Error deleting trip: ${error.message}`, 'danger');
+        }
+    }
+
+    // Toggle featured status
+    async function toggleFeatured(tripId, currentFeatured) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/trips/${tripId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    featured: !currentFeatured
+                })
+            });
+
+            if (response.ok) {
+                showTripAlert(`Trip ${!currentFeatured ? 'featured' : 'unfeatured'} successfully!`, 'success');
+                await loadTrips();
+            } else {
+                throw new Error('Failed to update featured status');
+            }
+        } catch (error) {
+            console.error('Error toggling featured status:', error);
+            showTripAlert(`Error updating featured status: ${error.message}`, 'danger');
+        }
+    }
+
+    // Show trip alert message
+    function showTripAlert(message, type) {
+        const alertContainer = document.getElementById('tripAlertContainer');
+        const alertId = 'trip-alert-' + Date.now();
+
+        const alertHTML = `
+            <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+
+        alertContainer.innerHTML = alertHTML;
+
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            const alertElement = document.getElementById(alertId);
+            if (alertElement) {
+                alertElement.remove();
+            }
+        }, 5000);
+    }
+
+    // Set default date range (last 30 days)
+    function setDefaultDateRange() {
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - 30);
+
+        document.getElementById('startDate').valueAsDate = startDate;
+        document.getElementById('endDate').valueAsDate = endDate;
+    }
+
+    // Load dashboard statistics
+    async function loadDashboardStats() {
+        try {
+            console.log('Loading dashboard stats...');
+            const response = await fetch(`${API_BASE}/operations/dashboard-stats`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const stats = await response.json();
+            console.log('Dashboard stats loaded:', stats);
+            updateDashboardStats(stats);
+
+        } catch (error) {
+            console.error('Error loading dashboard stats:', error);
+            showError('dashboard-stats', 'Failed to load statistics');
+        }
+    }
+
+    // Update dashboard statistics display
+    function updateDashboardStats(stats) {
+        // Format currency in Sri Lankan Rupees
+        const formatCurrency = (amount) => {
+            if (amount === undefined || amount === null) return 'Rs. 0';
+            return 'Rs. ' + parseFloat(amount).toLocaleString('en-LK');
+        };
+
+        document.getElementById('totalRevenue').textContent = formatCurrency(stats.totalRevenue);
+        document.getElementById('companyRevenue').textContent = formatCurrency(stats.companyRevenue);
+        document.getElementById('totalBookings').textContent = stats.totalBookings || 0;
+        document.getElementById('activeTrips').textContent = stats.activeTrips || 0;
+    }
+
+    // Load revenue distribution data
+    async function loadRevenueDistribution() {
+        try {
+            console.log('Loading revenue distribution...');
+            const response = await fetch(`${API_BASE}/operations/revenue-distribution`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('Revenue distribution loaded:', data);
+            renderRevenueDistributionChart(data);
+        } catch (error) {
+            console.error('Error loading revenue distribution:', error);
+        }
+    }
+
+    // Render revenue distribution chart
+    function renderRevenueDistributionChart(data) {
+        const ctx = document.getElementById('revenueDistributionChart').getContext('2d');
+
+        if (revenueDistributionChart) {
+            revenueDistributionChart.destroy();
+        }
+
+        revenueDistributionChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Company Revenue', 'Owner Payout', 'Taxes'],
+                datasets: [{
+                    data: [
+                        data.companyRevenue || 0,
+                        data.ownerPayout || 0,
+                        data.taxAmount || 0
+                    ],
+                    backgroundColor: [
+                        '#00534E', // Sri Lanka Green
+                        '#FF7F32', // Sri Lanka Orange
+                        '#8B0000'  // Sri Lanka Maroon
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: Rs. ${value.toLocaleString('en-LK')} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Load revenue trend data
+    async function loadRevenueTrend() {
+        try {
+            console.log('Loading revenue trend...');
+            const response = await fetch(`${API_BASE}/operations/revenue-trend`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('Revenue trend loaded:', data);
+            renderRevenueTrendChart(data);
+        } catch (error) {
+            console.error('Error loading revenue trend:', error);
+        }
+    }
+
+    // Render revenue trend chart
+    function renderRevenueTrendChart(data) {
+        const ctx = document.getElementById('revenueTrendChart').getContext('2d');
+
+        if (revenueTrendChart) {
+            revenueTrendChart.destroy();
+        }
+
+        revenueTrendChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.dates || [],
+                datasets: [
+                    {
+                        label: 'Total Revenue (LKR)',
+                        data: data.totalRevenue || [],
+                        borderColor: '#00534E',
+                        backgroundColor: 'rgba(0, 83, 78, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Company Revenue (LKR)',
+                        data: data.companyRevenue || [],
+                        borderColor: '#FF7F32',
+                        backgroundColor: 'rgba(255, 127, 50, 0.1)',
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return 'Rs. ' + value.toLocaleString('en-LK');
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Load booking status distribution
+    async function loadBookingStatus() {
+        try {
+            console.log('Loading booking status...');
+            const response = await fetch(`${API_BASE}/operations/booking-status-distribution`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('Booking status loaded:', data);
+            renderBookingStatusChart(data);
+        } catch (error) {
+            console.error('Error loading booking status:', error);
+        }
+    }
+
+    // Render booking status chart
+    function renderBookingStatusChart(data) {
+        const ctx = document.getElementById('bookingStatusChart').getContext('2d');
+
+        if (bookingStatusChart) {
+            bookingStatusChart.destroy();
+        }
+
+        bookingStatusChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: data.labels || [],
+                datasets: [{
+                    data: data.values || [],
+                    backgroundColor: [
+                        '#f59e0b', // Pending - Orange
+                        '#10b981', // Confirmed - Green
+                        '#3b82f6', // In Progress - Blue
+                        '#6b7280', // Completed - Gray
+                        '#ef4444'  // Cancelled - Red
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    // Load monthly bookings data
+    async function loadMonthlyBookings() {
+        try {
+            console.log('Loading monthly bookings...');
+            const response = await fetch(`${API_BASE}/operations/monthly-bookings`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('Monthly bookings loaded:', data);
+            renderMonthlyBookingsChart(data);
+        } catch (error) {
+            console.error('Error loading monthly bookings:', error);
+        }
+    }
+
+    // Render monthly bookings chart
+    function renderMonthlyBookingsChart(data) {
+        const ctx = document.getElementById('monthlyBookingsChart').getContext('2d');
+
+        if (monthlyBookingsChart) {
+            monthlyBookingsChart.destroy();
+        }
+
+        monthlyBookingsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.months || [],
+                datasets: [{
+                    label: 'Number of Bookings',
+                    data: data.counts || [],
+                    backgroundColor: '#00534E',
+                    borderColor: '#007369',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // Load report data for table
+    async function loadReportData() {
+        try {
+            console.log('Loading report data...');
+            showLoading('report-data');
+
+            const response = await fetch(`${API_BASE}/operations/report-data`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('Report data loaded:', data);
+            displayReportData(data);
+
+        } catch (error) {
+            console.error('Error loading report data:', error);
+            showError('report-data', 'Failed to load report data');
+        }
+    }
+
+    // Display report data in table
+    function displayReportData(data) {
+        const tbody = document.getElementById('reportDataTableBody');
+        tbody.innerHTML = '';
+
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10" class="text-center py-4">No data found for selected criteria</td></tr>';
+            return;
+        }
+
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            const statusClass = `status-${(item.status || 'PENDING').toLowerCase()}`;
+
+            // Format dates
+            const bookingDate = item.bookingDate ? formatDate(item.bookingDate) : 'N/A';
+
+            // Format currency in LKR
+            const formatCurrency = (amount) => {
+                if (!amount) return 'Rs. 0';
+                return 'Rs. ' + parseFloat(amount).toLocaleString('en-LK');
+            };
+
+            row.innerHTML = `
+            <td>#${item.bookingId || item.id}</td>
+            <td>${bookingDate}</td>
+            <td>${item.customerName || 'N/A'}</td>
+            <td>${item.tripName || 'N/A'}</td>
+            <td><span class="status-badge ${statusClass}">${item.status || 'PENDING'}</span></td>
+            <td class="currency">${formatCurrency(item.totalPrice)}</td>
+            <td class="currency">${formatCurrency(item.taxAmount)}</td>
+            <td class="currency">${formatCurrency(item.commissionAmount)}</td>
+            <td class="currency">${formatCurrency(item.ownerPayout)}</td>
+            <td class="currency">${formatCurrency(item.companyRevenue)}</td>
+        `;
+
+            tbody.appendChild(row);
+        });
+    }
+
+    // Load trip performance data
+    async function loadTripPerformance() {
+        try {
+            console.log('Loading trip performance...');
+            const response = await fetch(`${API_BASE}/operations/trip-performance`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('Trip performance loaded:', data);
+            displayTripPerformance(data);
+        } catch (error) {
+            console.error('Error loading trip performance:', error);
+        }
+    }
+
+    // Display trip performance data
+    function displayTripPerformance(data) {
+        const tbody = document.getElementById('tripPerformanceTableBody');
+        if (!tbody) return;
+
+        tbody.innerHTML = '';
+
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4">No trip performance data available</td></tr>';
+            return;
+        }
+
+        data.forEach(trip => {
+            const row = document.createElement('tr');
+
+            // Format currency in LKR
+            const formatCurrency = (amount) => {
+                if (!amount) return 'Rs. 0';
+                return 'Rs. ' + parseFloat(amount).toLocaleString('en-LK');
+            };
+
+            // Performance indicator styling
+            let performanceClass = 'text-success';
+            if (trip.performance === 'Good') performanceClass = 'text-info';
+            if (trip.performance === 'Average') performanceClass = 'text-warning';
+            if (trip.performance === 'Low') performanceClass = 'text-danger';
+
+            row.innerHTML = `
+            <td>${trip.name}</td>
+            <td>${trip.type}</td>
+            <td>${trip.totalBookings || 0}</td>
+            <td class="currency">${formatCurrency(trip.revenue)}</td>
+            <td>${trip.avgPassengers || 0}</td>
+            <td>
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar" role="progressbar"
+                         style="width: ${trip.utilization || 0}%"
+                         aria-valuenow="${trip.utilization || 0}"
+                         aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+                <small>${(trip.utilization || 0).toFixed(1)}%</small>
+            </td>
+            <td class="${performanceClass} fw-bold">${trip.performance}</td>
+        `;
+
+            tbody.appendChild(row);
+        });
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+        // Generate report button
+        document.getElementById('generateReport').addEventListener('click', function() {
+            loadDashboardStats();
+            loadReportData();
+        });
+
+        // Quick report cards
+        document.querySelectorAll('.report-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const reportType = this.getAttribute('data-report-type');
+                document.getElementById('reportType').value = reportType;
+                loadReportData();
+
+                // Scroll to report table
+                document.getElementById('reportDataTable').scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add to your setupEventListeners function
+        document.getElementById('exportRevenuePDF').addEventListener('click', exportToPDF);
+        document.getElementById('exportPerformancePDF').addEventListener('click', exportTripPerformancePDF);
+        document.getElementById('exportAllPDF').addEventListener('click', exportAllReports);
+
+        // Export buttons
+        document.getElementById('exportCSV').addEventListener('click', exportToCSV);
+        document.getElementById('exportPDF').addEventListener('click', exportToPDF);
+
+        // Logout button
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Logging out...');
+            localStorage.clear();
+            window.location.href = 'user-management.html';
+        });
+    }
+
+    // Enhanced trip performance PDF export
+    async function exportTripPerformancePDF() {
+        let exportBtn = null;
+
+        try {
+            console.log('Starting trip performance PDF export...');
+
+            // Safely get the export button (you might want to add an ID for this)
+            exportBtn = document.querySelector('[data-export="performance-pdf"]');
+            if (exportBtn) {
+                const originalHTML = exportBtn.innerHTML;
+                exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
+                exportBtn.disabled = true;
+            }
+
+            showExportFeedback('Generating trip performance report...', 'info');
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+            const response = await fetch(`${API_BASE}/operations/export/trip-performance-pdf`, {
+                signal: controller.signal
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                throw new Error(`Server returned ${response.status}`);
+            }
+
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/pdf')) {
+                throw new Error('Server did not return a PDF file');
+            }
+
+            const blob = await response.blob();
+
+            if (blob.size === 0) {
+                throw new Error('Generated PDF is empty');
+            }
+
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+
+            const now = new Date();
+            const timestamp = `${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}_${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}`;
+            a.download = `BoatSafari_Trip_Performance_${timestamp}.pdf`;
+
+            document.body.appendChild(a);
+            a.click();
+
+            setTimeout(() => {
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            }, 100);
+
+            showExportFeedback('Trip performance report downloaded successfully! ✅', 'success');
+
+        } catch (error) {
+            console.error('Trip Performance PDF Export Error:', error);
+
+            let errorMessage = 'Failed to generate trip performance PDF';
+            if (error.name === 'AbortError') {
+                errorMessage = 'PDF generation timed out. Please try again.';
+            } else if (error.message.includes('Failed to fetch')) {
+                errorMessage = 'Cannot connect to server. Please check your connection.';
+            } else {
+                errorMessage = error.message;
+            }
+
+            showExportFeedback(errorMessage, 'error');
+        } finally {
+            if (exportBtn) {
+                exportBtn.innerHTML = '<i class="fas fa-chart-line me-2"></i>Trip Performance PDF';
+                exportBtn.disabled = false;
+            }
+        }
+    }
+
+    async function exportAllReports() {
+        // You can implement a comprehensive report package
+        showExportFeedback('Complete report package feature coming soon!', 'info');
+    }
+
+    // Export to CSV
+    function exportToCSV() {
+        const table = document.getElementById('reportDataTable');
+        const rows = table.querySelectorAll('tr');
+        let csv = [];
+
+        for (let i = 0; i < rows.length; i++) {
+            let row = [], cols = rows[i].querySelectorAll('td, th');
+
+            for (let j = 0; j < cols.length; j++) {
+                let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").replace(/(\s\s)/gm, " ");
+                data = data.replace(/"/g, '""');
+                row.push('"' + data + '"');
+            }
+
+            csv.push(row.join(","));
+        }
+
+        const csvString = csv.join('\n');
+        const blob = new Blob([csvString], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', 'boat_safari_report.csv');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        showExportFeedback('CSV exported successfully!');
+    }
+    // Enhanced export feedback with error handling
+    function showExportFeedback(message, type = 'success') {
+        const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
+        const icon = type === 'error' ? 'fa-exclamation-triangle' : 'fa-check-circle';
+
+        const feedback = document.createElement('div');
+        feedback.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+        feedback.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        feedback.innerHTML = `
+        <i class="fas ${icon} me-2"></i>${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+        document.body.appendChild(feedback);
+
+        setTimeout(() => {
+            if (feedback.parentNode) {
+                feedback.parentNode.removeChild(feedback);
+            }
+        }, 5000);
+    }
+
+    // Export to PDF
+    async function exportToPDF() {
+        try {
+            console.log('Generating PDF report...');
+
+            // Show loading state - safely get the button
+            const exportBtn = document.getElementById('exportPDF');
+            if (exportBtn) {
+                const originalText = exportBtn.innerHTML;
+                exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating PDF...';
+                exportBtn.disabled = true;
+
+                // Restore button after operation (success or error)
+                const restoreButton = () => {
+                    exportBtn.innerHTML = originalText;
+                    exportBtn.disabled = false;
+                };
+            }
+
+            // Call the PDF export API
+            const response = await fetch(`${API_BASE}/operations/export/revenue-pdf`);
+
+            if (!response.ok) {
+                throw new Error(`PDF generation failed: ${response.status}`);
+            }
+
+            // Create blob and download
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+
+            // Generate filename with timestamp
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            a.download = `boat_safari_revenue_report_${timestamp}.pdf`;
+
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            showExportFeedback('PDF report generated successfully!');
+
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            showExportFeedback('Failed to generate PDF: ' + error.message, 'error');
+        } finally {
+            // Safely restore button state
+            const exportBtn = document.getElementById('exportPDF');
+            if (exportBtn) {
+                exportBtn.innerHTML = '<i class="fas fa-file-pdf me-2"></i>Export PDF';
+                exportBtn.disabled = false;
+            }
+        }
+    }
+
+
+    // Show loading state
+    function showLoading(elementId) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.innerHTML = '<tr><td colspan="10" class="text-center py-4"><div class="spinner-border text-primary" role="status"></div> Loading data...</td></tr>';
+        }
+    }
+
+    // Show error state
+    function showError(elementId, message) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.innerHTML = `<tr><td colspan="10" class="text-center py-4 text-danger"><i class="fas fa-exclamation-triangle me-2"></i>${message}</td></tr>`;
+        }
+    }
+
+    // Utility function to format dates
+    function formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-LK');
+    }
+</script>
+
+<script src="auth.js"></script>
+</body>
+</html>
