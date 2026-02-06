@@ -1058,12 +1058,35 @@
     }
 
     // Helper functions
-    function getFullImageUrl(imageUrl) {
-        if (!imageUrl) return 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80';
-        if (imageUrl.startsWith('http')) return imageUrl;
-        if (imageUrl.startsWith('/')) return `http://localhost:8080${imageUrl}`;
-        return `http://localhost:8080/external-uploads/gallery/${imageUrl}`;
+    // Updated function to handle Railway image URLs
+function getFullImageUrl(imageUrl) {
+    if (!imageUrl) {
+        return 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80';
     }
+    
+    // If it's already a full URL (external image)
+    if (imageUrl.startsWith('http')) {
+        return imageUrl;
+    }
+    
+    // If it's a relative path starting with /
+    if (imageUrl.startsWith('/')) {
+        // On Railway, use the current domain
+        return window.location.origin + imageUrl;
+    }
+    
+    // For uploaded images - use different paths for local vs Railway
+    const isRailway = !(window.location.hostname === 'localhost' || 
+                        window.location.hostname === '127.0.0.1');
+    
+    if (isRailway) {
+        // Railway deployment - images served from backend
+        return window.location.origin + '/uploads/' + imageUrl;
+    } else {
+        // Local development
+        return 'http://localhost:8080/uploads/' + imageUrl;
+    }
+}
 
     function generateStarRating(rating) {
         let stars = '';
