@@ -649,321 +649,101 @@
         </div>
     </footer>
 
+
+
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- Auth System -->
+<script src="auth.js"></script>
+
 <!-- Main Application Script -->
 <script>
-    // Base API URL - Works for both localhost and Railway
-    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? 'http://localhost:8080/api'
-        : '/api';
+    // Base API URL
+    const API_BASE_URL = '/api';
 
     // Global variables
     let allTrips = [];
 
-    // Fallback images for different trip types (Unsplash URLs)
-    const FALLBACK_IMAGES = {
-        safari: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1000&q=80',
-        sunset: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80',
-        wildlife: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1000&q=80',
-        river: 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?auto=format&fit=crop&w=1000&q=80',
-        bird: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=1000&q=80',
-        fishing: 'https://images.unsplash.com/photo-1470114716159-e389f8712fda?auto=format&fit=crop&w=1000&q=80',
-        adventure: 'https://images.unsplash.com/photo-1536152470826-7a76d3a6b1b8?auto=format&fit=crop&w=1000&q=80'
-    };
-
     // Initialize when page loads
     document.addEventListener('DOMContentLoaded', function() {
         console.log('🚀 Boat Safari Frontend Initializing...');
-        console.log('🌐 Current domain:', window.location.hostname);
-        console.log('🔗 API Base URL:', API_BASE_URL);
 
-        // Load all data
+        // The navbar will be automatically updated by auth.js
+        // Now load the rest of the page data
         loadAllData();
         setupEventListeners();
         setupFormHandlers();
     });
 
-    // ==================== IMAGE HANDLING FUNCTIONS ====================
+    // Upload image to server
+    async function uploadImage(file, folder) {
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('folder', folder);
 
-    // Get full image URL that works for Railway
-    function getFullImageUrl(imageUrl) {
-        if (!imageUrl) {
-            return FALLBACK_IMAGES.safari;
-        }
-        
-        // If it's already a full URL (external image)
-        if (imageUrl.startsWith('http')) {
-            return imageUrl;
-        }
-        
-        // If it's a relative path starting with / (Railway uploads)
-        if (imageUrl.startsWith('/')) {
-            // On Railway, use the current domain
-            return window.location.origin + imageUrl;
-        }
-        
-        // For filenames stored in database (Railway format)
-        // Railway serves uploaded files from /uploads/ directory
-        return window.location.origin + '/uploads/' + imageUrl;
-    }
+        try {
+            const response = await fetch(`${API_BASE_URL}/upload`, {
+                method: 'POST',
+                body: formData
+            });
 
-    // Check if an image exists at the given URL
-    async function checkImageExists(url) {
-        return new Promise((resolve) => {
-            const img = new Image();
-            img.onload = () => resolve(true);
-            img.onerror = () => resolve(false);
-            img.src = url;
-            
-            // Timeout after 3 seconds
-            setTimeout(() => resolve(false), 3000);
-        });
-    }
+            const result = await response.json();
 
-    // Get appropriate image for a trip
-    async function getTripImage(trip) {
-        if (!trip) return FALLBACK_IMAGES.safari;
-        
-        // Try database image first
-        if (trip.imageUrl) {
-            const fullImageUrl = getFullImageUrl(trip.imageUrl);
-            
-            // Check if the image exists
-            const imageExists = await checkImageExists(fullImageUrl);
-            
-            if (imageExists) {
-                console.log('✅ Using uploaded image for trip:', trip.name);
-                return fullImageUrl;
+            if (response.ok && result.success) {
+                return result.filePath;
             } else {
-                console.log('⚠️ Uploaded image not found, using fallback for:', trip.name);
+                throw new Error(result.message || 'Upload failed');
             }
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            throw new Error('Failed to upload image: ' + error.message);
         }
-        
-        // Use fallback based on trip type/name
-        return getFallbackImage(trip);
     }
-
-    // Get fallback image based on trip type
-    function getFallbackImage(trip) {
-        if (!trip) return FALLBACK_IMAGES.safari;
-        
-        const name = (trip.name || '').toLowerCase();
-        const type = (trip.type || '').toLowerCase();
-        const destination = (trip.destination || '').toLowerCase();
-        
-        // Check for keywords in name, type, or destination
-        if (name.includes('sunset') || type.includes('sunset') || destination.includes('sunset')) {
-            return FALLBACK_IMAGES.sunset;
-        }
-        if (name.includes('wildlife') || type.includes('wildlife') || destination.includes('wild')) {
-            return FALLBACK_IMAGES.wildlife;
-        }
-        if (name.includes('bird') || type.includes('bird') || destination.includes('bird')) {
-            return FALLBACK_IMAGES.bird;
-        }
-        if (name.includes('fish') || type.includes('fish') || destination.includes('fish')) {
-            return FALLBACK_IMAGES.fishing;
-        }
-        if (name.includes('river') || type.includes('river') || destination.includes('river')) {
-            return FALLBACK_IMAGES.river;
-        }
-        if (name.includes('adventure') || type.includes('adventure') || destination.includes('adventure')) {
-            return FALLBACK_IMAGES.adventure;
-        }
-        
-        return FALLBACK_IMAGES.safari;
-    }
-
-    // ==================== DATA LOADING FUNCTIONS ====================
 
     // Load all data for the homepage
     async function loadAllData() {
         try {
             console.log('📥 Loading data from backend...');
-            
-            // First check if backend is reachable
-            const isBackendAvailable = await checkBackendConnection();
-            
-            if (!isBackendAvailable) {
-                showError('Cannot connect to backend server. Please make sure the server is running.');
-                loadMockData(); // Load mock data as fallback
-                return;
-            }
-            
-            // Load real data
-            await Promise.all([
-                loadHeroData(),
-                loadAboutData(),
-                loadFeaturedTrips(),
-                loadApprovedReviews(),
-                loadGalleryItems(),
-                loadAllTrips(),
-                loadTripsForReviewForm()
-            ]);
+            await loadHeroData();
+            await loadAboutData();
+            await loadFeaturedTrips();
+            await loadApprovedReviews();
+            await loadGalleryItems();
+            await loadAllTrips();
+            await loadTripsForReviewForm();
 
             console.log('🎉 All data loaded successfully!');
         } catch (error) {
             console.error('❌ Error loading data:', error);
-            showError('Error loading data from server. Showing demo content.');
-            loadMockData(); // Load mock data as fallback
+            showError('Cannot connect to backend server. Please make sure Spring Boot is running on port 8080.');
         }
     }
-
-    // Check backend connection
-    async function checkBackendConnection() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/test`, { 
-                method: 'GET',
-                headers: { 'Accept': 'application/json' }
-            });
-            return response.ok;
-        } catch (error) {
-            console.warn('⚠️ Backend not reachable:', error.message);
-            return false;
-        }
-    }
-
-    // Load mock data as fallback
-    async function loadMockData() {
-        console.log('📋 Loading mock data for demonstration...');
-        
-        const mockTrips = [
-            {
-                id: 1,
-                name: "Sunset River Safari",
-                duration: 3,
-                pricePerPerson: 75,
-                description: "Beautiful evening cruise with stunning sunset views over the river.",
-                imageUrl: FALLBACK_IMAGES.sunset
-            },
-            {
-                id: 2,
-                name: "Wildlife Discovery Tour",
-                duration: 4,
-                pricePerPerson: 95,
-                description: "Spot exotic wildlife in their natural habitat with our expert guides.",
-                imageUrl: FALLBACK_IMAGES.wildlife
-            },
-            {
-                id: 3,
-                name: "Bird Watching Expedition",
-                duration: 5,
-                pricePerPerson: 85,
-                description: "Perfect for bird enthusiasts to observe rare species in their natural environment.",
-                imageUrl: FALLBACK_IMAGES.bird
-            }
-        ];
-        
-        await displayTrips(mockTrips);
-        
-        // Show info message
-        const container = document.getElementById('trips-container');
-        if (container) {
-            container.innerHTML = `
-                <div class="col-12">
-                    <div class="alert alert-info">
-                        <h4>🔄 Demo Mode</h4>
-                        <p>Showing demo trips. The backend server might be starting up or temporarily unavailable.</p>
-                        <p>Try refreshing the page in a minute.</p>
-                        <button class="btn btn-primary mt-2" onclick="loadAllData()">
-                            Try Loading Real Data
-                        </button>
-                    </div>
-                </div>
-            ` + container.innerHTML;
-        }
-    }
-
-    // Load featured trips
-    async function loadFeaturedTrips() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/trips/featured`);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const trips = await response.json();
-            console.log(`✅ Loaded ${trips.length} featured trips`);
-            
-            // Process and display trips with proper images
-            await displayTrips(trips);
-
-        } catch (error) {
-            console.error('❌ Error loading featured trips:', error);
-            throw error;
-        }
-    }
-
-    // Display trips with Railway-compatible images
-    async function displayTrips(trips) {
-        const container = document.getElementById('trips-container');
-        if (!container) return;
-
-        if (trips && trips.length > 0) {
-            // Create HTML for each trip with proper image handling
-            const tripPromises = trips.map(async (trip) => {
-                // Get the appropriate image URL
-                const imageUrl = await getTripImage(trip);
-                
-                return `
-                    <div class="col-md-4 mb-4">
-                        <div class="card trip-card h-100">
-                            <div class="trip-image" style="background-image: url('${imageUrl}')"></div>
-                            <div class="card-body d-flex flex-column">
-                                <h3 class="trip-name">${trip.name}</h3>
-                                <div class="trip-info">
-                                    <i class="fas fa-clock"></i>
-                                    <span>Duration: ${trip.duration || 'N/A'} hours</span>
-                                </div>
-                                <div class="trip-info">
-                                    <i class="fas fa-tag"></i>
-                                    <span>Price: $${trip.pricePerPerson || '0'} per person</span>
-                                </div>
-                                <p class="mt-3 flex-grow-1">${trip.description || 'Experience the beauty of nature with our expert guides.'}</p>
-                                <button class="btn btn-primary mt-3" onclick="bookTrip(${trip.id})">Book Now</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            // Wait for all images to be processed
-            const tripsHTML = await Promise.all(tripPromises);
-            container.innerHTML = tripsHTML.join('');
-            
-        } else {
-            container.innerHTML = `
-                <div class="col-12 text-center">
-                    <div class="alert alert-info">
-                        <h4>No Featured Trips Available</h4>
-                        <p>There are no featured trips in the database yet.</p>
-                    </div>
-                </div>
-            `;
-        }
-    }
-
-    // ==================== OTHER DATA LOADING FUNCTIONS ====================
 
     // Load hero section data
     async function loadHeroData() {
         try {
+            console.log('🔍 Loading hero data from:', `${API_BASE_URL}/dashboard/hero-data`);
+
             const response = await fetch(`${API_BASE_URL}/dashboard/hero-data`);
-            
+            console.log('📡 Hero data response status:', response.status);
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const heroData = await response.json();
+            console.log('🎯 Hero data loaded:', heroData);
+
+            // Update hero title and description
             updateHeroContent(heroData);
+
+            // Update hero stats
             updateHeroStats(heroData);
 
         } catch (error) {
             console.error('❌ Error loading hero data:', error);
-            // Use default hero content
+            console.warn('Using default hero content');
         }
     }
 
@@ -971,6 +751,13 @@
     function updateHeroContent(heroData) {
         const heroTitle = document.querySelector('.hero-title');
         const heroSubtitle = document.querySelector('.hero-subtitle');
+
+        console.log('Updating hero content:', {
+            title: heroData.title,
+            description: heroData.description,
+            heroTitleExists: !!heroTitle,
+            heroSubtitleExists: !!heroSubtitle
+        });
 
         if (heroTitle && heroData.title) {
             heroTitle.textContent = heroData.title;
@@ -984,7 +771,8 @@
     // Update hero stats
     function updateHeroStats(heroData) {
         const statElements = document.querySelectorAll('.stat-item');
-        
+        console.log('Updating hero stats. Found stat elements:', statElements.length);
+
         if (statElements.length >= 4) {
             if (heroData.happyCustomers) {
                 statElements[0].querySelector('.stat-number').textContent = heroData.happyCustomers;
@@ -1001,6 +789,22 @@
         }
     }
 
+    // Load featured trips
+    async function loadFeaturedTrips() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/trips/featured`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const trips = await response.json();
+            console.log(`✅ Loaded ${trips.length} featured trips`);
+            displayTrips(trips);
+
+        } catch (error) {
+            console.error('Error loading featured trips:', error);
+            throw error;
+        }
+    }
+
     // Load approved reviews
     async function loadApprovedReviews() {
         try {
@@ -1011,7 +815,194 @@
                 displayReviews(reviews);
             }
         } catch (error) {
-            console.error('❌ Error loading reviews:', error);
+            console.error('Error loading reviews:', error);
+        }
+    }
+
+    // Load gallery items
+    async function loadGalleryItems() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/gallery/active`);
+            if (response.ok) {
+                const gallery = await response.json();
+                console.log(`✅ Loaded ${gallery.length} active gallery items`);
+                displayGallery(gallery);
+            }
+        } catch (error) {
+            console.error('Error loading gallery items:', error);
+        }
+    }
+
+    // Load all trips for search functionality
+    async function loadAllTrips() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/trips/active`);
+            if (response.ok) {
+                allTrips = await response.json();
+                console.log(`✅ Loaded ${allTrips.length} total trips for search`);
+                populateSearchDropdowns();
+            }
+        } catch (error) {
+            console.error('Error loading all trips:', error);
+        }
+    }
+
+    // Load about section data for homepage
+    async function loadAboutData() {
+        try {
+            console.log('🔍 Loading about data for homepage...');
+
+            const response = await fetch(`${API_BASE_URL}/about/section-data`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('🎯 About data loaded for homepage:', result);
+
+            if (result.success) {
+                const aboutData = result.data;
+                updateAboutContent(aboutData);
+                updateAboutStats(aboutData);
+                updateAboutFeatures(aboutData);
+            }
+
+        } catch (error) {
+            console.error('❌ Error loading about data for homepage:', error);
+        }
+    }
+
+    // Update about content on homepage
+    function updateAboutContent(aboutData) {
+        const aboutTitle = document.querySelector('.about-section .section-title');
+        const aboutSubtitle = document.querySelector('.about-section h3');
+        const aboutDesc1 = document.querySelector('.about-section p:nth-of-type(1)');
+        const aboutDesc2 = document.querySelector('.about-section p:nth-of-type(2)');
+
+        if (aboutTitle && aboutData.title) {
+            aboutTitle.textContent = aboutData.title;
+        }
+        if (aboutSubtitle && aboutData.subtitle) {
+            aboutSubtitle.textContent = aboutData.subtitle;
+        }
+        if (aboutDesc1 && aboutData.description1) {
+            aboutDesc1.textContent = aboutData.description1;
+        }
+        if (aboutDesc2 && aboutData.description2) {
+            aboutDesc2.textContent = aboutData.description2;
+        }
+    }
+
+    // Update about statistics on homepage
+    function updateAboutStats(aboutData) {
+        const statElements = document.querySelectorAll('.about-section .stat-number');
+        const statLabels = document.querySelectorAll('.about-section .stat-label');
+
+        if (aboutData.stats && statElements.length >= 3) {
+            const stats = aboutData.stats;
+
+            // Years Experience
+            if (stats.years_experience && statElements[0]) {
+                statElements[0].textContent = stats.years_experience.value;
+                if (statLabels[0]) {
+                    statLabels[0].textContent = stats.years_experience.label || "Years Experience";
+                }
+            }
+
+            // Expert Guides
+            if (stats.expert_guides && statElements[1]) {
+                statElements[1].textContent = stats.expert_guides.value;
+                if (statLabels[1]) {
+                    statLabels[1].textContent = stats.expert_guides.label || "Expert Guides";
+                }
+            }
+
+            // Modern Boats
+            if (stats.modern_boats && statElements[2]) {
+                statElements[2].textContent = stats.modern_boats.value;
+                if (statLabels[2]) {
+                    statLabels[2].textContent = stats.modern_boats.label || "Modern Boats";
+                }
+            }
+        }
+    }
+
+    // Update about features on homepage
+    function updateAboutFeatures(aboutData) {
+        const featuresContainer = document.querySelector('.about-section .card .card-body');
+
+        if (featuresContainer && aboutData.features && aboutData.features.length > 0) {
+            let featuresHTML = '<h4 class="mb-4">Why Choose Boat Safari?</h4>';
+
+            aboutData.features.forEach(feature => {
+                featuresHTML += `
+                    <div class="trip-info mb-3">
+                        <i class="${feature.icon} ${feature.color || 'text-primary'}"></i>
+                        <span>${feature.title} - ${feature.description}</span>
+                    </div>
+                `;
+            });
+
+            featuresContainer.innerHTML = featuresHTML;
+        }
+    }
+
+    // Load all trips for the review form dropdown
+    async function loadTripsForReviewForm() {
+        try {
+            console.log('🔄 Loading trips for review form...');
+            const response = await fetch(`${API_BASE_URL}/trips/active`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const trips = await response.json();
+            console.log(`✅ Loaded ${trips.length} trips for review form`);
+
+            populateTripDropdown(trips);
+
+        } catch (error) {
+            console.error('❌ Error loading trips for review form:', error);
+        }
+    }
+
+    // Display functions
+    function displayTrips(trips) {
+        const container = document.getElementById('trips-container');
+        if (!container) return;
+
+        if (trips && trips.length > 0) {
+            container.innerHTML = trips.map(trip => `
+                <div class="col-md-4 mb-4">
+                    <div class="card trip-card h-100">
+                        <div class="trip-image" style="background-image: url('${trip.imageUrl || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80'}')"></div>
+                        <div class="card-body d-flex flex-column">
+                            <h3 class="trip-name">${trip.name}</h3>
+                            <div class="trip-info">
+                                <i class="fas fa-clock"></i>
+                                <span>Duration: ${trip.duration} hours</span>
+                            </div>
+                            <div class="trip-info">
+                                <i class="fas fa-tag"></i>
+                                <span>Price: $${trip.pricePerPerson} per person</span>
+                            </div>
+                            <p class="mt-3 flex-grow-1">${trip.description || 'Experience the beauty of nature with our expert guides.'}</p>
+                            <button class="btn btn-primary mt-3" onclick="bookTrip(${trip.id})">Book Now</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = `
+                <div class="col-12 text-center">
+                    <div class="alert alert-info">
+                        <h4>No Featured Trips Available</h4>
+                        <p>There are no featured trips in the database yet.</p>
+                    </div>
+                </div>
+            `;
         }
     }
 
@@ -1041,45 +1032,22 @@
         }
     }
 
-    // Load gallery items with Railway-compatible images
-    async function loadGalleryItems() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/gallery/active`);
-            if (response.ok) {
-                const gallery = await response.json();
-                console.log(`✅ Loaded ${gallery.length} active gallery items`);
-                displayGallery(gallery);
-            }
-        } catch (error) {
-            console.error('❌ Error loading gallery items:', error);
-        }
-    }
-
-    async function displayGallery(galleryItems) {
+    function displayGallery(galleryItems) {
         const container = document.getElementById('gallery-container');
         if (!container) return;
 
         if (galleryItems && galleryItems.length > 0) {
-            // Process each gallery item with proper image handling
-            const galleryPromises = galleryItems.map(async (item) => {
-                const imageUrl = await getTripImage(item); // Reuse the same image handling
-                
-                return `
-                    <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <img src="${imageUrl}" class="card-img-top" alt="${item.title}" style="height: 250px; object-fit: cover;">
-                            <div class="card-body">
-                                <h5 class="card-title">${item.title}</h5>
-                                ${item.description ? `<p class="card-text">${item.description}</p>` : ''}
-                            </div>
+            container.innerHTML = galleryItems.map(item => `
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="${getFullImageUrl(item.imageUrl)}" class="card-img-top" alt="${item.title}" style="height: 250px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">${item.title}</h5>
+                            ${item.description ? `<p class="card-text">${item.description}</p>` : ''}
                         </div>
                     </div>
-                `;
-            });
-            
-            const galleryHTML = await Promise.all(galleryPromises);
-            container.innerHTML = galleryHTML.join('');
-            
+                </div>
+            `).join('');
         } else {
             container.innerHTML = `
                 <div class="col-12 text-center">
@@ -1089,131 +1057,36 @@
         }
     }
 
-    // Load all trips for search functionality
-    async function loadAllTrips() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/trips/active`);
-            if (response.ok) {
-                allTrips = await response.json();
-                console.log(`✅ Loaded ${allTrips.length} total trips for search`);
-                populateSearchDropdowns();
-            }
-        } catch (error) {
-            console.error('❌ Error loading all trips:', error);
-        }
+    // Helper functions
+    // Updated function to handle Railway image URLs
+function getFullImageUrl(imageUrl) {
+    if (!imageUrl) {
+        return 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=80';
     }
-
-    // Load about section data
-    async function loadAboutData() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/about/section-data`);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const result = await response.json();
-            
-            if (result.success) {
-                const aboutData = result.data;
-                updateAboutContent(aboutData);
-                updateAboutStats(aboutData);
-                updateAboutFeatures(aboutData);
-            }
-
-        } catch (error) {
-            console.error('❌ Error loading about data:', error);
-        }
+    
+    // If it's already a full URL (external image)
+    if (imageUrl.startsWith('http')) {
+        return imageUrl;
     }
-
-    function updateAboutContent(aboutData) {
-        const aboutTitle = document.querySelector('.about-section .section-title');
-        const aboutSubtitle = document.querySelector('.about-section h3');
-        const aboutDesc1 = document.querySelector('.about-section p:nth-of-type(1)');
-        const aboutDesc2 = document.querySelector('.about-section p:nth-of-type(2)');
-
-        if (aboutTitle && aboutData.title) {
-            aboutTitle.textContent = aboutData.title;
-        }
-        if (aboutSubtitle && aboutData.subtitle) {
-            aboutSubtitle.textContent = aboutData.subtitle;
-        }
-        if (aboutDesc1 && aboutData.description1) {
-            aboutDesc1.textContent = aboutData.description1;
-        }
-        if (aboutDesc2 && aboutData.description2) {
-            aboutDesc2.textContent = aboutData.description2;
-        }
+    
+    // If it's a relative path starting with /
+    if (imageUrl.startsWith('/')) {
+        // On Railway, use the current domain
+        return window.location.origin + imageUrl;
     }
-
-    function updateAboutStats(aboutData) {
-        const statElements = document.querySelectorAll('.about-section .stat-number');
-        const statLabels = document.querySelectorAll('.about-section .stat-label');
-
-        if (aboutData.stats && statElements.length >= 3) {
-            const stats = aboutData.stats;
-
-            if (stats.years_experience && statElements[0]) {
-                statElements[0].textContent = stats.years_experience.value;
-                if (statLabels[0]) {
-                    statLabels[0].textContent = stats.years_experience.label || "Years Experience";
-                }
-            }
-
-            if (stats.expert_guides && statElements[1]) {
-                statElements[1].textContent = stats.expert_guides.value;
-                if (statLabels[1]) {
-                    statLabels[1].textContent = stats.expert_guides.label || "Expert Guides";
-                }
-            }
-
-            if (stats.modern_boats && statElements[2]) {
-                statElements[2].textContent = stats.modern_boats.value;
-                if (statLabels[2]) {
-                    statLabels[2].textContent = stats.modern_boats.label || "Modern Boats";
-                }
-            }
-        }
+    
+    // For uploaded images - use different paths for local vs Railway
+    const isRailway = !(window.location.hostname === 'localhost' || 
+                        window.location.hostname === '127.0.0.1');
+    
+    if (isRailway) {
+        // Railway deployment - images served from backend
+        return window.location.origin + '/uploads/' + imageUrl;
+    } else {
+        // Local development
+        return 'http://localhost:8080/uploads/' + imageUrl;
     }
-
-    function updateAboutFeatures(aboutData) {
-        const featuresContainer = document.querySelector('.about-section .card .card-body');
-
-        if (featuresContainer && aboutData.features && aboutData.features.length > 0) {
-            let featuresHTML = '<h4 class="mb-4">Why Choose Boat Safari?</h4>';
-
-            aboutData.features.forEach(feature => {
-                featuresHTML += `
-                    <div class="trip-info mb-3">
-                        <i class="${feature.icon} ${feature.color || 'text-primary'}"></i>
-                        <span>${feature.title} - ${feature.description}</span>
-                    </div>
-                `;
-            });
-
-            featuresContainer.innerHTML = featuresHTML;
-        }
-    }
-
-    // Load trips for review form dropdown
-    async function loadTripsForReviewForm() {
-        try {
-            const response = await fetch(`${API_BASE_URL}/trips/active`);
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const trips = await response.json();
-            console.log(`✅ Loaded ${trips.length} trips for review form`);
-            populateTripDropdown(trips);
-
-        } catch (error) {
-            console.error('❌ Error loading trips for review form:', error);
-        }
-    }
-
-    // ==================== HELPER FUNCTIONS ====================
+}
 
     function generateStarRating(rating) {
         let stars = '';
@@ -1265,8 +1138,7 @@
         });
     }
 
-    // ==================== FORM HANDLERS ====================
-
+    // Form handlers
     function setupFormHandlers() {
         // Rating stars
         const ratingStars = document.querySelectorAll('.rating-star');
@@ -1332,7 +1204,6 @@
                     star.innerHTML = '<i class="far fa-star"></i>';
                 });
                 document.getElementById('reviewRating').value = '';
-                loadApprovedReviews(); // Refresh reviews
             } else {
                 alert('❌ ' + (result.message || 'Error submitting review. Please try again.'));
             }
@@ -1342,8 +1213,7 @@
         }
     }
 
-    // ==================== EVENT LISTENERS ====================
-
+    // Event listeners
     function setupEventListeners() {
         const searchButton = document.querySelector('.search-box .btn');
         if (searchButton) {
@@ -1356,8 +1226,7 @@
         }
     }
 
-    // ==================== ACTION FUNCTIONS ====================
-
+    // Action functions
     async function searchTrips() {
         const destination = document.getElementById('destination').value;
         const tripType = document.getElementById('tripType').value;
@@ -1384,13 +1253,13 @@
             const trips = await response.json();
 
             if (trips.length > 0) {
-                await displayTrips(trips);
+                displayTrips(trips);
                 document.getElementById('trips').scrollIntoView({ behavior: 'smooth' });
             } else {
                 alert('No trips found matching your criteria.');
             }
         } catch (error) {
-            console.error('❌ Error searching trips:', error);
+            console.error('Error searching trips:', error);
             alert('Error searching for trips. Please try again.');
         }
     }
@@ -1410,7 +1279,7 @@
                 document.getElementById('trips').scrollIntoView({ behavior: 'smooth' });
             })
             .catch(error => {
-                console.error('❌ Error loading all trips:', error);
+                console.error('Error loading all trips:', error);
                 alert('Error loading trips. Please try again.');
             });
     }
@@ -1423,12 +1292,6 @@
                     <div class="alert alert-danger">
                         <h4>❌ Connection Error</h4>
                         <p>${message}</p>
-                        <p><strong>Troubleshooting steps:</strong></p>
-                        <ol>
-                            <li>Check if the backend server is running</li>
-                            <li>Verify the Railway deployment is active</li>
-                            <li>Refresh the page after 1-2 minutes</li>
-                        </ol>
                         <button class="btn btn-primary mt-2" onclick="loadAllData()">Retry Connection</button>
                     </div>
                 </div>
@@ -1436,6 +1299,10 @@
         }
     }
 </script>
+
+<!-- Auth System -->
+<script src="auth.js"></script>
+
 
 </body>
 </html>
